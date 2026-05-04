@@ -598,16 +598,12 @@ function onScan(val){
     +'</div>'
     +'</div>';
 
-  // Sheets ga yuborish
-  var chSizes = found.sizes || {};
-  jsonp(OMBOR_URL,{
-    action:'addChiqim', sana:sana, bc:rec.bc, trim:rec.trim,
-    client:rec.client, product:rec.product, color:rec.color,
-    buyer:rec.buyer, qty:rec.qty, sizes:JSON.stringify(chSizes)
-  },function(err,d){
-    rec.holat=(!err&&d&&d.status==='ok')?'✅':'⚠️';
-    renderChiqim();
-  });
+  // Pending qilib qo'yamiz - saveAllChiqim bosilganda yuboriladi
+  rec.holat = '⏳ Kutilmoqda';
+  rec.pending = true;
+  rec.sizes = found.sizes || {};
+  renderChiqim();
+  updateSaveBtn();
 
   // Keyingi skanerga tayyor
   setTimeout(function(){
@@ -626,30 +622,64 @@ function flashScanner(color){
   playBeep(color);
 }
 
-function playBeep(type){
+var audioCtx = null;
+var soundEnabled = false;
+
+function enableSound(){
   try {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var osc = ctx.createOscillator();
-    var gain = ctx.createGain();
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Brauzerga ovoz ruxsati berish uchun bo'sh signal
+    var buf = audioCtx.createBuffer(1, 1, 22050);
+    var src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(audioCtx.destination);
+    src.start(0);
+    soundEnabled = true;
+    var btn = document.getElementById('soundBtn');
+    btn.textContent = '🔊 Ovoz yoqildi';
+    btn.style.background = '#e8f5e9';
+    btn.style.borderColor = '#27ae60';
+    btn.style.color = '#2e7d32';
+    btn.onclick = disableSound;
+    toast('🔊 Ovoz yoqildi!');
+  } catch(e) {
+    toast('⚠️ Ovoz ishlamadi');
+  }
+}
+
+function disableSound(){
+  soundEnabled = false;
+  var btn = document.getElementById('soundBtn');
+  btn.textContent = '🔇 Ovozni yoq';
+  btn.style.background = '#fff';
+  btn.style.borderColor = '#ddd';
+  btn.style.color = '';
+  btn.onclick = enableSound;
+  toast('🔇 Ovoz o'chirildi');
+}
+
+function playBeep(type){
+  if(!soundEnabled || !audioCtx) return;
+  try {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(audioCtx.destination);
 
     if(type === 'green'){
-      // Muvaffaqiyat: qisqa yuqori ovoz
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.2);
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.2);
     } else {
-      // Xato: past uzun ovoz
-      osc.frequency.setValueAtTime(220, ctx.currentTime);
-      osc.frequency.setValueAtTime(180, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.4, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.4);
     }
   } catch(e) {}
 }
@@ -689,6 +719,64 @@ function cancelScan(){
   document.getElementById('scan-inp').value='';
   document.getElementById('scan-result').innerHTML='';
   document.getElementById('scan-inp').focus();
+}
+
+function updateSaveBtn(){
+  var pending = chiqimData.filter(function(r){ return r.pending; });
+  var btn = document.getElementById('saveAllBtn');
+  var cnt = document.getElementById('unsaved-count');
+  if(!btn) return;
+  if(pending.length > 0){
+    btn.style.display = 'inline-block';
+    cnt.textContent = pending.length;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function saveAllChiqim(){
+  var pending = chiqimData.filter(function(r){ return r.pending; });
+  if(!pending.length){ toast('Сақланадиган маълумот йўқ'); return; }
+
+  var btn = document.getElementById('saveAllBtn');
+  btn.textContent = '⏳ Юборилмоқда...';
+  btn.disabled = true;
+
+  var total = pending.length;
+  var done = 0;
+  var errors = 0;
+
+  pending.forEach(function(rec){
+    var chSizes = rec.sizes || {};
+    jsonp(OMBOR_URL,{
+      action:'addChiqim',
+      sana: rec.sana, bc: rec.bc, trim: rec.trim,
+      client: rec.client, product: rec.product, color: rec.color,
+      buyer: rec.buyer, qty: rec.qty,
+      sizes: JSON.stringify(chSizes)
+    },function(err,d){
+      done++;
+      if(!err && d && d.status==='ok'){
+        rec.holat = '✅ Ёзилди';
+        rec.pending = false;
+      } else {
+        rec.holat = '⚠️ Хато';
+        errors++;
+      }
+      renderChiqim();
+      if(done === total){
+        btn.disabled = false;
+        updateSaveBtn();
+        if(errors === 0){
+          toast('✅ Барча '+total+' та чиқим Google Sheets'га ёзилди!');
+          playBeep('green');
+        } else {
+          toast('⚠️ '+errors+' та ёзилмади — қайтадан уриниб кўринг');
+          playBeep('red');
+        }
+      }
+    });
+  });
 }
 
 function renderChiqim(){
@@ -892,6 +980,50 @@ function updateSizeGrid(){
   grid.innerHTML = active.map(function(s){
     return '<div class="size-item"><label>'+s+'</label><input id="s'+s+'" type="number" min="0" placeholder="0" value="'+(oldVals[s]||'')+'"></div>';
   }).join('');
+}
+
+// ═══ OVOZ UCHUN BRAUZER RUXSATI ═══
+var audioCtx = null;
+function unlockAudio(){
+  if(audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Jimgina unlock qilish
+    var buf = audioCtx.createBuffer(1,1,22050);
+    var src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(audioCtx.destination);
+    src.start(0);
+  } catch(e){}
+  document.removeEventListener('click', unlockAudio);
+  document.removeEventListener('keydown', unlockAudio);
+}
+document.addEventListener('click', unlockAudio);
+document.addEventListener('keydown', unlockAudio);
+
+function playBeep(type){
+  try {
+    var ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    if(type === 'green'){
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.2);
+    } else {
+      osc.frequency.setValueAtTime(220, ctx.currentTime);
+      osc.frequency.setValueAtTime(180, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    }
+  } catch(e) {}
 }
 
 // ═══ ISHGA TUSHIRISH ═══
