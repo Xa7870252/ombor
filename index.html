@@ -154,19 +154,29 @@ tr:hover td { background: #fafafa; }
       <div class="form-group"><label>Сана</label><input id="k-sana" type="date"></div>
     </div>
     <div style="margin-top:12px">
-      <label style="font-size:11px;color:#777;font-weight:600">ЎЛЧАМЛАР (дона)</label>
-      <div class="sizes-grid">
-        <div class="size-item"><label>40</label><input id="s40" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>42</label><input id="s42" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>44</label><input id="s44" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>46</label><input id="s46" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>48</label><input id="s48" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>50</label><input id="s50" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>52</label><input id="s52" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>54</label><input id="s54" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>56</label><input id="s56" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>58</label><input id="s58" type="number" min="0" placeholder="0"></div>
-        <div class="size-item"><label>60</label><input id="s60" type="number" min="0" placeholder="0"></div>
+      <label style="font-size:11px;color:#777;font-weight:600">ЎЛЧАМЛАР — диапазон танланг:</label>
+      <div style="display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#666">
+          <span>Дан:</span>
+          <select id="size-from" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
+            <option value="40">40</option><option value="42">42</option><option value="44">44</option>
+            <option value="46">46</option><option value="48">48</option><option value="50">50</option>
+            <option value="52">52</option><option value="54">54</option><option value="56">56</option>
+            <option value="58">58</option><option value="60">60</option><option value="62">62</option>
+            <option value="64">64</option><option value="66">66</option><option value="68">68</option>
+          </select>
+          <span>Гача:</span>
+          <select id="size-to" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
+            <option value="40">40</option><option value="42">42</option><option value="44">44</option>
+            <option value="46">46</option><option value="48">48</option><option value="50" selected>50</option>
+            <option value="52">52</option><option value="54">54</option><option value="56">56</option>
+            <option value="58">58</option><option value="60">60</option><option value="62">62</option>
+            <option value="64">64</option><option value="66">66</option><option value="68">68</option>
+          </select>
+        </div>
+      </div>
+      <div class="sizes-grid" id="sizes-grid">
+        <!-- Динамик размерлар -->
       </div>
     </div>
     <div class="btn-row">
@@ -257,7 +267,7 @@ tr:hover td { background: #fafafa; }
 <script>
 // ═══ URLs ═══
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbwjoZww-vZmIJBrOwTizvyfcUQev6rQxu6tksXg9jr0mK8jsqGtvua1NqdYMLhVkGFRZg/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbwcAOp6tem1B9Y7kvHxFsbZPSACLjtPT8IjUrevkYbBrWiDAN9Tux09QNN_Bdts9qU5iw/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxwOvqjqCdc07ITsNqNMZMt9Qcn-iC7I7tD7Rq8c0C-5X2YaowqDrmnUcGv42jB2Z8KEg/exec';
 
 // ═══ МАЪЛУМОТЛАР — SHEETS DAN ═══
 var kirimData  = [];
@@ -393,8 +403,9 @@ function addKirim(){
   var product=document.getElementById('k-product').value.trim();
   if(!client||!product){ toast('Клиент ва Маҳсулот киритинг!'); return; }
   var sizes={},jami=0;
-  [40,42,44,46,48,50,52,54,56,58,60].forEach(function(s){
-    var v=parseInt(document.getElementById('s'+s).value)||0;
+  getActiveSizes().forEach(function(s){
+    var inp=document.getElementById('s'+s);
+    var v=inp?parseInt(inp.value)||0:0;
     sizes[s]=v; jami+=v;
   });
   lastBc++;
@@ -425,7 +436,7 @@ function addKirim(){
 
 function clearForm(){
   ['k-client','k-product','k-color','k-trim','k-kg'].forEach(function(id){ document.getElementById(id).value=''; });
-  [40,42,44,46,48,50,52,54,56,58,60].forEach(function(s){ document.getElementById('s'+s).value=''; });
+  getActiveSizes().forEach(function(s){ var inp=document.getElementById('s'+s); if(inp) inp.value=''; });
   document.getElementById('k-sana').valueAsDate=new Date();
   document.getElementById('order-results').style.display='none';
   document.getElementById('trim-inp').value='';
@@ -538,10 +549,12 @@ function saveChiqim(){
   document.getElementById('ch-form').style.display='none';
   scanRow=null;
 
+  // Kirimdagi sizes ni olish
+  var chSizes = (scanRow && scanRow.sizes) ? scanRow.sizes : {};
   jsonp(OMBOR_URL,{
     action:'addChiqim', sana:sana, bc:rec.bc, trim:rec.trim,
     client:rec.client, product:rec.product, color:rec.color,
-    buyer:buyer, qty:qty
+    buyer:buyer, qty:qty, sizes:JSON.stringify(chSizes)
   },function(err,d){
     rec.holat=(!err&&d&&d.status==='ok')?'✅ Ёзилди':'⚠️ Хато';
     renderChiqim();
@@ -679,7 +692,32 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); },3000);
 }
 
+// ═══ РАЗМЕР ДИАПАЗОНИ ═══
+var ALL_SIZES = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
+
+function getActiveSizes(){
+  var from = parseInt(document.getElementById('size-from').value)||40;
+  var to   = parseInt(document.getElementById('size-to').value)||60;
+  if(from > to){ var tmp=from; from=to; to=tmp; }
+  return ALL_SIZES.filter(function(s){ return s>=from && s<=to; });
+}
+
+function updateSizeGrid(){
+  var active = getActiveSizes();
+  var grid = document.getElementById('sizes-grid');
+  // Eski qiymatlarni saqlash
+  var oldVals = {};
+  ALL_SIZES.forEach(function(s){
+    var inp = document.getElementById('s'+s);
+    if(inp) oldVals[s] = inp.value;
+  });
+  grid.innerHTML = active.map(function(s){
+    return '<div class="size-item"><label>'+s+'</label><input id="s'+s+'" type="number" min="0" placeholder="0" value="'+(oldVals[s]||'')+'"></div>';
+  }).join('');
+}
+
 // ═══ ISHGA TUSHIRISH ═══
+updateSizeGrid();
 loadFromSheets();
 </script>
 </body>
