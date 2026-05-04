@@ -128,7 +128,22 @@ tr:hover td { background: #fafafa; }
   <h1>ТМО Трикотаж</h1>
   <span class="badge">Омбор тизими</span>
   <div class="conn-status" id="connStatus">⚡ Уланмоқда...</div>
+  <div id="authBadge" style="margin-left:8px;font-size:11px;padding:4px 10px;border-radius:10px;background:#2d2d50;cursor:pointer" onclick="showAuthModal()">🔒 Кириш</div>
 </header>
+
+<!-- AUTH MODAL -->
+<div id="authModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:28px 32px;width:300px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+    <div style="font-size:32px;margin-bottom:8px">🔐</div>
+    <h3 style="font-size:16px;margin-bottom:6px">Операторга кириш</h3>
+    <p style="font-size:12px;color:#888;margin-bottom:16px">Пароль киритинг</p>
+    <input id="passInput" type="password" placeholder="Пароль..." onkeydown="if(event.key==='Enter')checkPass()"
+      style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;text-align:center;letter-spacing:3px;margin-bottom:12px">
+    <div id="passError" style="color:#e94560;font-size:12px;margin-bottom:8px;display:none">Нотўғри пароль!</div>
+    <button onclick="checkPass()" style="width:100%;padding:10px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">Кириш</button>
+    <button onclick="closeAuth()" style="width:100%;padding:8px;background:none;color:#888;border:none;font-size:13px;cursor:pointer;margin-top:6px">Бекор</button>
+  </div>
+</div>
 
 <div class="tabs">
   <div class="tab active" onclick="showTab('kirim',this)">📥 Кирим</div>
@@ -142,7 +157,7 @@ tr:hover td { background: #fafafa; }
     <div class="card-title">Тримкарта орқали юклаш</div>
     <div class="trim-search">
       <input id="trim-inp" placeholder="Тримкарта: B26/023" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') fetchOrder()">
-      <button onclick="fetchOrder()">🔍 Юклаш</button>
+      <button onclick="if(isOperator)fetchOrder();else showAuthModal()">🔍 Юклаш</button>
     </div>
     <div id="order-results" style="display:none"></div>
     <div class="form-grid">
@@ -180,8 +195,9 @@ tr:hover td { background: #fafafa; }
       </div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="addKirim()">+ Қўшиш ва QR яратиш</button>
-      <button class="btn btn-outline" onclick="clearForm()">Тозалаш</button>
+      <button class="btn btn-primary op-only" onclick="addKirim()" style="display:none">+ Қўшиш ва QR яратиш</button>
+      <button class="btn btn-outline op-only" onclick="clearForm()" style="display:none">Тозалаш</button>
+      <div id="view-only-msg" style="font-size:12px;color:#e94560;padding:6px 10px;background:#ffeaea;border-radius:6px">🔒 Кирим қўшиш учун <b>Кириш</b> тугмасини босинг</div>
     </div>
   </div>
 
@@ -216,7 +232,7 @@ tr:hover td { background: #fafafa; }
       <p style="color:#999;font-size:13px;margin-top:4px">Сканер аппаратни ушбу майдонга йўналтиринг</p>
       <input class="scanner-input" id="scan-inp" placeholder="Баркод рақами..."
         onkeydown="if(event.key==='Enter'){onScan(this.value);}"
-        oninput="handleScanInput(this.value)">
+        oninput="if(isOperator)handleScanInput(this.value)" onkeydown="if(event.key==='Enter'&&isOperator){onScan(this.value);}">
     </div>
     <div id="scan-result"></div>
   </div>
@@ -228,7 +244,7 @@ tr:hover td { background: #fafafa; }
       <div class="form-group"><label>Сана</label><input id="ch-sana" type="date"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-green" onclick="saveChiqim()">✅ Чиқимни сақлаш</button>
+      <button class="btn btn-green op-only" onclick="saveChiqim()" style="display:none">✅ Чиқимни сақлаш</button>
       <button class="btn btn-outline" onclick="cancelScan()">Бекор</button>
     </div>
   </div>
@@ -390,11 +406,25 @@ function selectOrder(el,idx){
 }
 
 function fillForm(item){
+  var fields = ['k-trim','k-client','k-product','k-color'];
+  fields.forEach(function(id){
+    var el = document.getElementById(id);
+    el.removeAttribute('readonly');
+    el.style.background='';
+  });
   document.getElementById('k-trim').value=item.trim||'';
   document.getElementById('k-client').value=item.client||'';
   document.getElementById('k-product').value=item.product||'';
   document.getElementById('k-color').value=item.color||'';
-  toast('✅ Форма тўлдирилди: '+item.product);
+  // Yuklanganidan keyin readonly
+  fields.forEach(function(id){
+    var el = document.getElementById(id);
+    el.setAttribute('readonly','readonly');
+    el.style.background='#f0f7ff';
+    el.style.color='#1a1a2e';
+    el.style.fontWeight='600';
+  });
+  toast('✅ Форма тўлдирилди — фақат ўлчам ва кгни киритинг');
 }
 
 // ═══ KИRIM ═══
@@ -435,7 +465,14 @@ function addKirim(){
 }
 
 function clearForm(){
-  ['k-client','k-product','k-color','k-trim','k-kg'].forEach(function(id){ document.getElementById(id).value=''; });
+  ['k-client','k-product','k-color','k-trim','k-kg'].forEach(function(id){
+    var el=document.getElementById(id);
+    el.value='';
+    el.removeAttribute('readonly');
+    el.style.background='';
+    el.style.color='';
+    el.style.fontWeight='';
+  });
   getActiveSizes().forEach(function(s){ var inp=document.getElementById('s'+s); if(inp) inp.value=''; });
   document.getElementById('k-sana').valueAsDate=new Date();
   document.getElementById('order-results').style.display='none';
@@ -463,9 +500,8 @@ function renderKirim(){
       +'<td><b>'+r.jami+'</b></td>'
       +'<td>'+r.kg+'</td>'
       +'<td style="display:flex;gap:4px">'
-      +'<button onclick="doPrint([kirimData.find(function(x){return (x.id||x.bc)===\''+(r.id||r.bc)+'\'})])" style="padding:3px 9px;font-size:11px;border:1px solid #1a1a2e;border-radius:4px;cursor:pointer;background:#fff">🖨</button>'
-      +'<button onclick="deleteKirim(\''+(r.id||r.bc)+'\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">🗑</button>'
-      +'</td></tr>';
+      +'<button onclick="doPrint([kirimData.find(function(x){return String(x.id||x.bc)===\''+String(r.id||r.bc)+'\'})])" style="padding:3px 9px;font-size:11px;border:1px solid #1a1a2e;border-radius:4px;cursor:pointer;background:#fff">\u{1F5A8}</button>'
+      +(isOperator?'<button onclick="deleteKirim(\'' + (r.id||r.bc) + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">\u{1F5D1}</button>':'')+'</td></tr>';
   }).join('');
 }
 
@@ -493,6 +529,10 @@ function deleteKirim(id){
 }
 
 // ═══ ЧИҚИМ ═══
+function handleScanKey(event){
+  if(event.key==='Enter' && isOperator) onScan(document.getElementById('scan-inp').value);
+}
+
 var scanTimer=null;
 function handleScanInput(val){
   clearTimeout(scanTimer);
@@ -583,7 +623,7 @@ function renderChiqim(){
       +'<td>'+r.color+'</td>'
       +'<td><b>'+r.qty+'</b></td>'
       +'<td>'+(r.holat||'—')+'</td>'
-      +'<td><button onclick="deleteChiqim(\''+(r.id||r.bc)+'\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">🗑</button></td>'
+      +'<td>'+(isOperator?'<button onclick="deleteChiqim(\'' + (r.id||r.bc) + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">\u{1F5D1}</button>':'—')+'</td>'
       +'</tr>';
   }).join('');
 }
@@ -690,6 +730,62 @@ function toast(msg){
   var t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); },3000);
+}
+
+// ═══ ПАРОЛГА АСОСЛАНГАН ДОСТУП ═══
+// Паролни шу ерда ўзгартиринг:
+var OPERATOR_PASS = 'tmo2026';
+var isOperator = false;
+
+function showAuthModal(){
+  if(isOperator){ logout(); return; }
+  document.getElementById('authModal').style.display='flex';
+  setTimeout(function(){ document.getElementById('passInput').focus(); },100);
+}
+
+function checkPass(){
+  var pass = document.getElementById('passInput').value;
+  if(pass === OPERATOR_PASS){
+    isOperator = true;
+    document.getElementById('authModal').style.display='none';
+    document.getElementById('passInput').value='';
+    document.getElementById('passError').style.display='none';
+    document.getElementById('authBadge').textContent='✅ Оператор';
+    document.getElementById('authBadge').style.background='#1e5c38';
+    enableOperatorMode();
+    toast('✅ Оператор режими ёқилди!');
+  } else {
+    document.getElementById('passError').style.display='block';
+    document.getElementById('passInput').value='';
+    document.getElementById('passInput').focus();
+  }
+}
+
+function closeAuth(){
+  document.getElementById('authModal').style.display='none';
+  document.getElementById('passInput').value='';
+  document.getElementById('passError').style.display='none';
+}
+
+function logout(){
+  if(!confirm('Оператор режимидан чиқасизми?')) return;
+  isOperator = false;
+  document.getElementById('authBadge').textContent='🔒 Кириш';
+  document.getElementById('authBadge').style.background='#2d2d50';
+  disableOperatorMode();
+  toast('🔒 Кириш режими');
+}
+
+function enableOperatorMode(){
+  // Кирим тугмалари
+  document.querySelectorAll('.op-only').forEach(function(el){ el.style.display=''; });
+  // Чиқим форма
+  var cf = document.getElementById('ch-form-btn');
+  if(cf) cf.style.display='';
+}
+
+function disableOperatorMode(){
+  document.querySelectorAll('.op-only').forEach(function(el){ el.style.display='none'; });
 }
 
 // ═══ РАЗМЕР ДИАПАЗОНИ ═══
