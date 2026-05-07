@@ -563,16 +563,32 @@ function addKirim() {
 }
 
 function clearKirimForm() {
-  ['k-client','k-product','k-color','k-trim','k-kg'].forEach(function(id) {
+  // Trimkarta + u orqali kelgan ma'lumotlar saqlanib qoladi
+  var savedTrim    = document.getElementById('k-trim').value;
+  var savedTrimInp = document.getElementById('trim-inp').value;
+  var savedClient  = document.getElementById('k-client').value;
+  var savedProduct = document.getElementById('k-product').value;
+  var savedColor   = document.getElementById('k-color').value;
+
+  // Faqat Kg tozalanadi
+  document.getElementById('k-kg').value = '';
+
+  // Trimkarta va tortib kelgan maydonlarni qayta o'rnatish
+  ['k-trim','k-client','k-product','k-color'].forEach(function(id) {
     var el = document.getElementById(id);
-    el.value = '';
-    el.removeAttribute('readonly');
-    el.style.background = '';
-    el.style.fontWeight = '';
+    el.setAttribute('readonly','readonly');
+    el.style.background = '#f0f7ff';
+    el.style.fontWeight = '600';
   });
+  document.getElementById('k-trim').value    = savedTrim;
+  document.getElementById('k-client').value  = savedClient;
+  document.getElementById('k-product').value = savedProduct;
+  document.getElementById('k-color').value   = savedColor;
+  document.getElementById('trim-inp').value  = savedTrimInp;
   document.getElementById('k-sana').valueAsDate = new Date();
   document.getElementById('order-results').style.display = 'none';
-  document.getElementById('trim-inp').value = '';
+
+  // Faqat o'lchamlar tozalanadi
   getActiveSizes().forEach(function(s) {
     var el = document.getElementById('s' + s);
     if (el) el.value = '';
