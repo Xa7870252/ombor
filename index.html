@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ТМО Трикотаж — Омбор тизими</title>
+<title>TMO Trikotaj — Ombor tizimi</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -16,29 +16,23 @@ header h1{font-size:16px;font-weight:700}
 .conn.err{background:#7c1e1e}
 .auth-btn{margin-left:auto;font-size:11px;padding:5px 12px;border-radius:10px;background:#2d2d50;cursor:pointer;border:none;color:#fff;font-weight:600}
 .auth-btn.on{background:#1e5c38}
-
 .tabs{display:flex;background:#fff;border-bottom:2px solid #eee;padding:0 20px}
 .tab{padding:12px 20px;cursor:pointer;font-size:13px;font-weight:600;color:#999;border-bottom:3px solid transparent;margin-bottom:-2px}
 .tab.active{color:#1a1a2e;border-color:#e94560}
-
 .page{display:none;padding:16px;max-width:960px;margin:0 auto}
 .page.active{display:block}
-
 .card{background:#fff;border-radius:10px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
 .card-title{font-size:11px;color:#999;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
-
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-group{display:flex;flex-direction:column;gap:4px}
 .form-group label{font-size:11px;color:#777;font-weight:600}
 .form-group input,.form-group select{padding:8px 11px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:#fafafa}
 .form-group input:focus{outline:none;border-color:#1a1a2e;background:#fff}
 .form-group input[readonly]{background:#f0f7ff;color:#1a1a2e;font-weight:600}
-
 .trim-search{display:flex;gap:8px;align-items:flex-end;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #f0f0f0}
 .trim-search input{flex:1;padding:10px 14px;border:2px solid #1a1a2e;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:2px;font-family:monospace}
 .trim-search input:focus{outline:none;background:#f0f7ff}
 .trim-search button{padding:10px 20px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer}
-
 .found-orders{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:12px;margin-bottom:12px}
 .found-orders h4{color:#2e7d32;font-size:13px;margin-bottom:8px}
 .order-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fff;border-radius:6px;margin-bottom:6px;cursor:pointer;border:2px solid transparent;font-size:12px}
@@ -47,58 +41,46 @@ header h1{font-size:16px;font-weight:700}
 .oi-trim{font-weight:800;font-family:monospace;font-size:13px;min-width:80px}
 .oi-prod{flex:1}
 .oi-qty{font-weight:700;color:#1a1a2e;min-width:60px;text-align:right}
-
 .not-found-box{background:#ffeaea;border:1px solid #ffcdd2;border-radius:8px;padding:12px;color:#c62828;font-size:13px;margin-bottom:12px}
-
 .sizes-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:6px}
 .size-item{display:flex;flex-direction:column;gap:3px}
 .size-item label{font-size:10px;color:#999;text-align:center;font-weight:600}
 .size-item input{padding:6px 2px;text-align:center;border:1px solid #ddd;border-radius:5px;font-size:12px}
-
 .btn{padding:9px 18px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer}
 .btn-primary{background:#1a1a2e;color:#fff}
 .btn-red{background:#e94560;color:#fff}
 .btn-green{background:#27ae60;color:#fff}
 .btn-outline{background:#fff;color:#1a1a2e;border:1.5px solid #1a1a2e}
 .btn-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
-
 table{width:100%;border-collapse:collapse;font-size:12.5px}
 th{background:#f6f6f6;padding:8px;text-align:left;font-size:10.5px;color:#999;text-transform:uppercase;border-bottom:1px solid #eee;white-space:nowrap}
 td{padding:8px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
 tr:hover td{background:#fafafa}
 .bc-badge{background:#1a1a2e;color:#fff;padding:3px 7px;border-radius:4px;font-size:11px;font-family:monospace;letter-spacing:1px}
 .empty{text-align:center;padding:28px;color:#bbb;font-size:13px}
-
 .scanner-box{border:2px dashed #ccc;border-radius:10px;padding:16px;text-align:center;cursor:text;margin-bottom:12px;transition:all 0.3s}
 .scanner-box.ok{border-color:#27ae60;background:#f0fff4}
 .scanner-box.err{border-color:#e94560;background:#fff5f5}
 .scanner-input{width:100%;padding:12px;font-size:20px;border:2px solid #1a1a2e;border-radius:8px;text-align:center;letter-spacing:4px;font-family:monospace;margin-top:8px}
 .scanner-input:focus{outline:none;background:#f0f7ff}
-
 .found-box{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:12px;margin-bottom:10px}
+.found-box h3{color:#2e7d32;margin-bottom:8px;font-size:14px}
 .not-found{background:#ffeaea;border:1px solid #ffcdd2;border-radius:8px;padding:12px;color:#c62828;text-align:center;font-size:13px}
-
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
 .stat-card{background:#fff;border-radius:10px;padding:16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
 .stat-num{font-size:26px;font-weight:800}
 .stat-lbl{font-size:11px;color:#999;margin-top:4px}
-
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
 .load-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:center;justify-content:center}
 .load-box{background:#fff;border-radius:12px;padding:24px 32px;text-align:center;font-size:14px}
 .load-sp{width:32px;height:32px;border:3px solid #1a1a2e;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
-
 #toast{position:fixed;bottom:20px;right:20px;background:#1a1a2e;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;max-width:300px}
 #toast.show{opacity:1}
-
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal-box{background:#fff;border-radius:12px;padding:28px 32px;width:300px;text-align:center}
-
 .save-all-btn{display:none;padding:10px 22px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-left:auto}
-
 .print-area{display:none}
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -124,63 +106,61 @@ tr:hover td{background:#fafafa}
 <body>
 
 <header>
-  <h1>ТМО Трикотаж</h1>
-  <span class="badge">Омбор тизими</span>
-  <div class="conn" id="connStatus">⚡ Уланмоқда...</div>
-  <button class="auth-btn" id="authBtn" onclick="showAuth()">🔒 Кириш</button>
+  <h1>TMO Trikotaj</h1>
+  <span class="badge">Ombor tizimi</span>
+  <div class="conn" id="connStatus">Ulanmoqda...</div>
+  <button class="auth-btn" id="authBtn" onclick="showAuth()">Kirish</button>
 </header>
 
-<!-- AUTH MODAL -->
 <div class="modal-bg" id="authModal">
   <div class="modal-box">
     <div style="font-size:32px;margin-bottom:8px">🔐</div>
-    <h3 style="font-size:16px;margin-bottom:6px">Операторга кириш</h3>
-    <p style="font-size:12px;color:#888;margin-bottom:16px">Пароль киритинг</p>
-    <input id="passInput" type="password" placeholder="Пароль..."
-      onkeydown="if(event.key==='Enter') checkPass()"
+    <h3 style="font-size:16px;margin-bottom:6px">Operator kirishi</h3>
+    <p style="font-size:12px;color:#888;margin-bottom:16px">Parolni kiriting</p>
+    <input id="passInput" type="password" placeholder="Parol..."
       style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;text-align:center;letter-spacing:3px;margin-bottom:12px">
-    <div id="passErr" style="color:#e94560;font-size:12px;margin-bottom:8px;display:none">Нотўғри пароль!</div>
-    <button onclick="checkPass()" style="width:100%;padding:10px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">Кириш</button>
-    <button onclick="closeAuth()" style="width:100%;padding:8px;background:none;color:#888;border:none;font-size:13px;cursor:pointer;margin-top:6px">Бекор</button>
+    <div id="passErr" style="color:#e94560;font-size:12px;margin-bottom:8px;display:none">Notogri parol!</div>
+    <button onclick="checkPass()" style="width:100%;padding:10px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">Kirish</button>
+    <button onclick="closeAuth()" style="width:100%;padding:8px;background:none;color:#888;border:none;font-size:13px;cursor:pointer;margin-top:6px">Bekor</button>
   </div>
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('kirim',this)">📥 Кирим</div>
-  <div class="tab" onclick="showTab('chiqim',this)">📤 Чиқим</div>
-  <div class="tab" onclick="showTab('bugun',this)">📊 Бугун</div>
+  <div class="tab active" onclick="showTab('kirim',this)">Kirim</div>
+  <div class="tab" onclick="showTab('chiqim',this)">Chiqim</div>
+  <div class="tab" onclick="showTab('bugun',this)">Bugun</div>
 </div>
 
-<!-- КИРИМ -->
+<!-- KIRIM -->
 <div class="page active" id="tab-kirim">
   <div class="card">
-    <div class="card-title">Тримкарта орқали юклаш</div>
+    <div class="card-title">Trimkarta orqali yuklash</div>
     <div class="trim-search">
-      <input id="trim-inp" placeholder="Тримкарта: B26/023"
+      <input id="trim-inp" placeholder="Trimkarta: B26/023"
         oninput="this.value=this.value.toUpperCase()"
         onkeydown="if(event.key==='Enter') fetchOrder()">
-      <button onclick="fetchOrder()">🔍 Юклаш</button>
+      <button onclick="fetchOrder()">Yuklash</button>
     </div>
     <div id="order-results" style="display:none"></div>
     <div class="form-grid">
-      <div class="form-group"><label>Тримкарта №</label><input id="k-trim" placeholder="B26/023" style="font-family:monospace;font-weight:700"></div>
-      <div class="form-group"><label>Клиент</label><input id="k-client" placeholder="Клиент исми"></div>
-      <div class="form-group"><label>Маҳсулот номи</label><input id="k-product" placeholder="TRIKO"></div>
-      <div class="form-group"><label>Ранги</label><input id="k-color" placeholder="Қора"></div>
-      <div class="form-group"><label>Кг</label><input id="k-kg" type="number" placeholder="25"></div>
-      <div class="form-group"><label>Сана</label><input id="k-sana" type="date"></div>
+      <div class="form-group"><label>Trimkarta</label><input id="k-trim" placeholder="B26/023" style="font-family:monospace;font-weight:700"></div>
+      <div class="form-group"><label>Klient</label><input id="k-client" placeholder="Klient ismi"></div>
+      <div class="form-group"><label>Mahsulot</label><input id="k-product" placeholder="TRIKO"></div>
+      <div class="form-group"><label>Rangi</label><input id="k-color" placeholder="Qora"></div>
+      <div class="form-group"><label>Kg</label><input id="k-kg" type="number" placeholder="25"></div>
+      <div class="form-group"><label>Sana</label><input id="k-sana" type="date"></div>
     </div>
     <div style="margin-top:12px">
-      <label style="font-size:11px;color:#777;font-weight:600">ЎЛЧАМЛАР — диапазон:</label>
+      <label style="font-size:11px;color:#777;font-weight:600">OLCHAMLAR — diapazon:</label>
       <div style="display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap">
-        <span style="font-size:12px;color:#666">Дан:</span>
+        <span style="font-size:12px;color:#666">Dan:</span>
         <select id="size-from" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
           <option>40</option><option>42</option><option>44</option><option>46</option>
           <option>48</option><option>50</option><option>52</option><option>54</option>
           <option>56</option><option>58</option><option>60</option><option>62</option>
           <option>64</option><option>66</option><option>68</option>
         </select>
-        <span style="font-size:12px;color:#666">Гача:</span>
+        <span style="font-size:12px;color:#666">Gacha:</span>
         <select id="size-to" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
           <option>40</option><option>42</option><option>44</option><option>46</option>
           <option>48</option><option selected>50</option><option>52</option><option>54</option>
@@ -191,30 +171,30 @@ tr:hover td{background:#fafafa}
       <div class="sizes-grid" id="sizes-grid"></div>
     </div>
     <div class="btn-row" id="kirim-btns" style="display:none">
-      <button class="btn btn-primary" onclick="addKirim()">+ Қўшиш ва QR яратиш</button>
-      <button class="btn btn-outline" onclick="clearKirimForm()">Тозалаш</button>
+      <button class="btn btn-primary" onclick="addKirim()">+ Qoshish va QR yaratish</button>
+      <button class="btn btn-outline" onclick="clearKirimForm()">Tozalash</button>
     </div>
     <div id="kirim-lock-msg" style="margin-top:12px;font-size:12px;color:#e94560;padding:8px 12px;background:#ffeaea;border-radius:6px">
-      🔒 Кирим қўшиш учун юқоридаги <b>Кириш</b> тугмасини босинг
+      Kirim qoshish uchun Kirish tugmasini bosing
     </div>
   </div>
   <div class="card">
     <div class="card-title">
-      <span>Кирим жадвали</span>
-      <button class="btn btn-red" onclick="printSelected()" style="font-size:12px;padding:6px 14px">🖨 Танланганларни чоп эт</button>
+      <span>Kirim jadvali</span>
+      <button class="btn btn-red" onclick="printSelected()" style="font-size:12px;padding:6px 14px">Chop et</button>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-      <input id="k-search" placeholder="Қидириш..." oninput="renderKirim()"
+      <input id="k-search" placeholder="Qidirish..." oninput="renderKirim()"
         style="padding:7px 11px;border:1px solid #ddd;border-radius:6px;font-size:13px;flex:1;max-width:200px">
-      <button class="btn btn-outline" onclick="selAll()" style="font-size:12px;padding:6px 12px">Барчасини танла</button>
-      <button class="btn btn-outline" onclick="deselAll()" style="font-size:12px;padding:6px 12px">Бекор</button>
+      <button class="btn btn-outline" onclick="selAll()" style="font-size:12px;padding:6px 12px">Barchasini tanla</button>
+      <button class="btn btn-outline" onclick="deselAll()" style="font-size:12px;padding:6px 12px">Bekor</button>
     </div>
     <div style="overflow:auto">
       <table>
         <thead><tr>
           <th style="width:32px"><input type="checkbox" id="cbAll" onchange="toggleAll(this)"></th>
-          <th>#</th><th>Баркод</th><th>Тримкарта</th><th>Сана</th>
-          <th>Клиент</th><th>Маҳсулот</th><th>Ранги</th><th>Жами</th><th>Кг</th><th></th>
+          <th>#</th><th>Barkod</th><th>Trimkarta</th><th>Sana</th>
+          <th>Klient</th><th>Mahsulot</th><th>Rangi</th><th>Jami</th><th>Kg</th><th></th>
         </tr></thead>
         <tbody id="kirim-tbody"></tbody>
       </table>
@@ -222,48 +202,40 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- ЧИҚИМ -->
+<!-- CHIQIM -->
 <div class="page" id="tab-chiqim">
-  <!-- Sana va hisoblagich -->
   <div class="card" style="padding:12px 18px">
     <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:8px">
-        <label style="font-size:12px;color:#777;font-weight:600">САНА:</label>
-        <input id="ch-sana" type="date"
-          style="padding:7px 10px;border:1.5px solid #1a1a2e;border-radius:6px;font-size:13px;font-weight:700">
+        <label style="font-size:12px;color:#777;font-weight:600">SANA:</label>
+        <input id="ch-sana" type="date" style="padding:7px 10px;border:1.5px solid #1a1a2e;border-radius:6px;font-size:13px;font-weight:700">
       </div>
       <div style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:12px;color:#888">Сканерланди:</span>
+        <span style="font-size:12px;color:#888">Skanerlandi:</span>
         <span id="scan-count" style="font-size:20px;font-weight:800;color:#1a1a2e">0</span>
-        <span style="font-size:12px;color:#888">та</span>
+        <span style="font-size:12px;color:#888">ta</span>
       </div>
       <button class="save-all-btn" id="saveAllBtn" onclick="saveAllChiqim()">
-        ✅ Барчасини сақлаш (<span id="unsaved-count">0</span> та)
+        Barchasini saqlash (<span id="unsaved-count">0</span> ta)
       </button>
     </div>
   </div>
-
-  <!-- Scanner -->
   <div class="card">
-    <div class="card-title">QR Код сканер — кетма-кет режим</div>
+    <div class="card-title">QR Kod skaner</div>
     <div class="scanner-box" id="scanner-area" onclick="focusScan()">
       <div style="font-size:32px">📷</div>
-      <p style="color:#999;font-size:13px;margin-top:4px">Сканерлаган заҳоти рўйхатга қўшилади</p>
-      <input class="scanner-input" id="scan-inp" placeholder="Баркод рақами..."
-        onkeydown="scanKeyDown(event)"
-        oninput="scanInput(this.value)">
+      <p style="color:#999;font-size:13px;margin-top:4px">Skaner apparatni shu yerga yonaltiring</p>
+      <input class="scanner-input" id="scan-inp" placeholder="Barkod raqami...">
     </div>
     <div id="scan-result"></div>
   </div>
-
-  <!-- Jadval -->
   <div class="card">
-    <div class="card-title">Чиқим жадвали</div>
+    <div class="card-title">Chiqim jadvali</div>
     <div style="overflow:auto">
       <table>
         <thead><tr>
-          <th>#</th><th>Баркод</th><th>Тримкарта</th><th>Сана</th>
-          <th>Харидор</th><th>Маҳсулот</th><th>Ранги</th><th>Миқдор</th><th>Ҳолат</th><th></th>
+          <th>#</th><th>Barkod</th><th>Trimkarta</th><th>Sana</th>
+          <th>Xaridor</th><th>Mahsulot</th><th>Rangi</th><th>Miqdor</th><th>Holat</th><th></th>
         </tr></thead>
         <tbody id="ch-tbody"></tbody>
       </table>
@@ -271,16 +243,16 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- БУГУН -->
+<!-- BUGUN -->
 <div class="page" id="tab-bugun">
   <div class="stats-grid" id="stats"></div>
   <div class="card">
-    <div class="card-title">Бугунги ҳаракатлар</div>
+    <div class="card-title">Bugungi harakatlar</div>
     <div style="overflow:auto">
       <table>
         <thead><tr>
-          <th>Тури</th><th>Баркод</th><th>Тримкарта</th>
-          <th>Маҳсулот</th><th>Ранги</th><th>Клиент/Харидор</th><th>Миқдор</th>
+          <th>Turi</th><th>Barkod</th><th>Trimkarta</th>
+          <th>Mahsulot</th><th>Rangi</th><th>Klient/Xaridor</th><th>Miqdor</th>
         </tr></thead>
         <tbody id="bugun-tbody"></tbody>
       </table>
@@ -292,25 +264,23 @@ tr:hover td{background:#fafafa}
 <div id="toast"></div>
 
 <script>
-// ═══ CONFIG ═══
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbwjoZww-vZmIJBrOwTizvyfcUQev6rQxu6tksXg9jr0mK8jsqGtvua1NqdYMLhVkGFRZg/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxwOvqjqCdc07ITsNqNMZMt9Qcn-iC7I7tD7Rq8c0C-5X2YaowqDrmnUcGv42jB2Z8KEg/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbzx5_aLd8MfKQtzWEQQw1_V_ZHT5JWMk7xOOY7EKNn0D_PhtfMSWtAESrl1NzCXNboWWQ/exec';
 var OPERATOR_PASS = 'tmo2024';
+var ALL_SIZES = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
 
-// ═══ STATE ═══
 var kirimData  = [];
 var chiqimData = [];
 var lastBc     = 10001;
 var selIds     = new Set();
 var isOperator = false;
 var audioCtx   = null;
-var ALL_SIZES  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
+var scanTimer  = null;
 
-// ═══ INIT ═══
 document.getElementById('k-sana').valueAsDate = new Date();
 document.getElementById('ch-sana').valueAsDate = new Date();
 
-// Audio unlock - birinchi bosishda
+// Audio unlock
 document.addEventListener('click', function unlockAudio() {
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -321,12 +291,11 @@ document.addEventListener('click', function unlockAudio() {
     src.start(0);
   } catch(e) {}
   document.removeEventListener('click', unlockAudio);
-}, {once: true});
+}, {once:true});
 
-// ═══ OVOZ ═══
 function playBeep(type) {
   try {
-    var ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    var ctx  = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
     var osc  = ctx.createOscillator();
     var gain = ctx.createGain();
     osc.connect(gain);
@@ -349,9 +318,9 @@ function playBeep(type) {
   } catch(e) {}
 }
 
-// ═══ AUTH ═══
+// Auth
 function showAuth() {
-  if (isOperator) { logoutOperator(); return; }
+  if (isOperator) { logoutOp(); return; }
   document.getElementById('authModal').classList.add('open');
   setTimeout(function() { document.getElementById('passInput').focus(); }, 100);
 }
@@ -361,35 +330,41 @@ function closeAuth() {
   document.getElementById('passErr').style.display = 'none';
 }
 function checkPass() {
-  if (document.getElementById('passInput').value === OPERATOR_PASS) {
+  var inp = document.getElementById('passInput');
+  if (inp.value === OPERATOR_PASS) {
     isOperator = true;
     closeAuth();
-    document.getElementById('authBtn').textContent = '✅ Оператор';
+    document.getElementById('authBtn').textContent = 'Operator';
     document.getElementById('authBtn').classList.add('on');
     document.getElementById('kirim-btns').style.display = 'flex';
     document.getElementById('kirim-lock-msg').style.display = 'none';
-    toast('✅ Оператор режими ёқилди!');
     renderKirim();
     renderChiqim();
+    toast('Operator rejimi yoqildi!');
   } else {
     document.getElementById('passErr').style.display = 'block';
-    document.getElementById('passInput').value = '';
-    document.getElementById('passInput').focus();
+    inp.value = '';
+    inp.focus();
   }
 }
-function logoutOperator() {
-  if (!confirm('Оператор режимидан чиқасизми?')) return;
+function logoutOp() {
+  if (!confirm('Operator rejimidan chiqasizmi?')) return;
   isOperator = false;
-  document.getElementById('authBtn').textContent = '🔒 Кириш';
+  document.getElementById('authBtn').textContent = 'Kirish';
   document.getElementById('authBtn').classList.remove('on');
   document.getElementById('kirim-btns').style.display = 'none';
   document.getElementById('kirim-lock-msg').style.display = 'block';
   renderKirim();
   renderChiqim();
-  toast('🔒 Оператор режими ўчирилди');
+  toast('Operator rejimi o\'chirildi');
 }
 
-// ═══ JSONP ═══
+// Parol Enter
+document.getElementById('passInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkPass();
+});
+
+// JSONP
 function jsonp(url, params, cb) {
   var name = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
   params.callback = name;
@@ -406,19 +381,28 @@ function jsonp(url, params, cb) {
     cb(null, data);
   };
   s.onerror = function() {
-    if (!done) { delete window[name]; try { document.head.removeChild(s); } catch(e) {} cb(new Error('err')); }
+    if (!done) {
+      delete window[name];
+      try { document.head.removeChild(s); } catch(e) {}
+      cb(new Error('err'));
+    }
   };
   setTimeout(function() {
-    if (!done) { delete window[name]; try { document.head.removeChild(s); } catch(e) {} cb(new Error('timeout')); }
-  }, 10000);
+    if (!done) {
+      delete window[name];
+      try { document.head.removeChild(s); } catch(e) {}
+      cb(new Error('timeout'));
+    }
+  }, 12000);
   document.head.appendChild(s);
 }
 
-// ═══ LOADING ═══
+// Loading
 function showLoad(msg) {
   var d = document.createElement('div');
-  d.className = 'load-overlay'; d.id = 'loadOv';
-  d.innerHTML = '<div class="load-box"><div class="load-sp"></div>' + (msg||'Юкланмоқда...') + '</div>';
+  d.className = 'load-overlay';
+  d.id = 'loadOv';
+  d.innerHTML = '<div class="load-box"><div class="load-sp"></div>' + (msg || 'Yuklanmoqda...') + '</div>';
   document.body.appendChild(d);
 }
 function hideLoad() {
@@ -426,7 +410,7 @@ function hideLoad() {
   if (d) d.remove();
 }
 
-// ═══ TABS ═══
+// Tabs
 function showTab(name, el) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
@@ -440,22 +424,24 @@ function showTab(name, el) {
   }
 }
 
-// ═══ SHEETS DAN YUKLAB OLISH ═══
+// Load from Sheets
 function loadFromSheets() {
-  showLoad('Маълумотлар юкланмоқда...');
-  jsonp(OMBOR_URL, {action: 'getData'}, function(err, d) {
+  showLoad('Ma\'lumotlar yuklanmoqda...');
+  jsonp(OMBOR_URL, {action:'getData'}, function(err, d) {
     hideLoad();
     var s = document.getElementById('connStatus');
     if (err || !d || d.status !== 'ok') {
-      s.textContent = '❌ Уланмади'; s.className = 'conn err';
-      toast('⚠️ Sheets\'дан юкланмади');
+      s.textContent = 'Ulanmadi';
+      s.className = 'conn err';
+      toast('Sheets\'dan yuklanmadi');
       return;
     }
-    s.textContent = '✅ Sheets уланди'; s.className = 'conn ok';
+    s.textContent = 'Sheets ulandi';
+    s.className = 'conn ok';
     kirimData  = d.kirim  || [];
     chiqimData = d.chiqim || [];
     if (kirimData.length) {
-      var mx = Math.max.apply(null, kirimData.map(function(r) { return parseInt(r.bc)||0; }));
+      var mx = Math.max.apply(null, kirimData.map(function(r) { return parseInt(r.bc) || 0; }));
       if (mx > lastBc) lastBc = mx;
     }
     renderKirim();
@@ -463,29 +449,30 @@ function loadFromSheets() {
   });
 }
 
-// ═══ ZAKAZ QIDIRISH ═══
+// Zakaz qidirish
 function fetchOrder() {
   if (!isOperator) { showAuth(); return; }
   var trim = document.getElementById('trim-inp').value.trim().toUpperCase();
-  if (!trim) { toast('Тримкарта рақамини киритинг!'); return; }
+  if (!trim) { toast('Trimkarta raqamini kiriting!'); return; }
   var btn = document.querySelector('.trim-search button');
-  btn.innerHTML = '<span class="spinner"></span>Юкланмоқда...';
+  btn.innerHTML = '<span class="spinner"></span>Yuklanmoqda...';
   btn.disabled = true;
-  jsonp(ZAKAZ_URL, {action: 'getOrder', trim: trim}, function(err, d) {
-    btn.innerHTML = '🔍 Юклаш'; btn.disabled = false;
+  jsonp(ZAKAZ_URL, {action:'getOrder', trim:trim}, function(err, d) {
+    btn.innerHTML = 'Yuklash';
+    btn.disabled = false;
     var res = document.getElementById('order-results');
     res.style.display = 'block';
     if (err || !d || d.status !== 'ok' || !d.data || !d.data.length) {
-      res.innerHTML = '<div class="not-found-box">❌ <b>' + trim + '</b> топилмади</div>';
+      res.innerHTML = '<div class="not-found-box">' + trim + ' topilmadi</div>';
       return;
     }
-    var html = '<div class="found-orders"><h4>✅ ' + d.data.length + ' та топилди:</h4>';
+    var html = '<div class="found-orders"><h4>' + d.data.length + ' ta topildi:</h4>';
     d.data.forEach(function(item, i) {
       html += '<div class="order-item" onclick="selectOrder(this,' + i + ')">'
         + '<div class="oi-trim">' + item.trim + '</div>'
-        + '<div class="oi-prod"><b>' + item.product + '</b> — ' + item.color
+        + '<div class="oi-prod"><b>' + item.product + '</b> &mdash; ' + item.color
         + '<br><small style="color:#888">' + item.client + '</small></div>'
-        + '<div class="oi-qty">' + item.qty + ' дона</div>'
+        + '<div class="oi-qty">' + item.qty + ' dona</div>'
         + '</div>';
     });
     html += '</div>';
@@ -506,23 +493,18 @@ function selectOrder(el, idx) {
 }
 
 function fillForm(item) {
-  var fields = {
-    'k-trim': item.trim||'',
-    'k-client': item.client||'',
-    'k-product': item.product||'',
-    'k-color': item.color||''
-  };
-  Object.keys(fields).forEach(function(id) {
+  var map = {'k-trim':item.trim||'','k-client':item.client||'','k-product':item.product||'','k-color':item.color||''};
+  Object.keys(map).forEach(function(id) {
     var el = document.getElementById(id);
-    el.value = fields[id];
-    el.setAttribute('readonly','readonly');
+    el.value = map[id];
+    el.setAttribute('readonly', 'readonly');
     el.style.background = '#f0f7ff';
     el.style.fontWeight = '600';
   });
-  toast('✅ Форма тўлдирилди — ўлчам ва кгни киритинг');
+  toast('Forma to\'ldirildi: ' + item.product);
 }
 
-// ═══ РАЗМЕР GRID ═══
+// Size grid
 function getActiveSizes() {
   var from = parseInt(document.getElementById('size-from').value) || 40;
   var to   = parseInt(document.getElementById('size-to').value)   || 60;
@@ -537,46 +519,46 @@ function updateSizeGrid() {
     var el = document.getElementById('s' + s);
     if (el) old[s] = el.value;
   });
-  var grid = document.getElementById('sizes-grid');
-  grid.innerHTML = active.map(function(s) {
+  document.getElementById('sizes-grid').innerHTML = active.map(function(s) {
     return '<div class="size-item"><label>' + s + '</label>'
-      + '<input id="s' + s + '" type="number" min="0" placeholder="0" value="' + (old[s]||'') + '"></div>';
+      + '<input id="s' + s + '" type="number" min="0" placeholder="0" value="' + (old[s] || '') + '"></div>';
   }).join('');
 }
 
-// ═══ КИРИМ ═══
+// Kirim
 function addKirim() {
   var client  = document.getElementById('k-client').value.trim();
   var product = document.getElementById('k-product').value.trim();
-  if (!client || !product) { toast('Клиент ва Маҳсулот киритинг!'); return; }
+  if (!client || !product) { toast('Klient va Mahsulot kiriting!'); return; }
   var sizes = {}, jami = 0;
   getActiveSizes().forEach(function(s) {
     var el = document.getElementById('s' + s);
-    var v = el ? (parseInt(el.value)||0) : 0;
-    sizes[s] = v; jami += v;
+    var v  = el ? (parseInt(el.value) || 0) : 0;
+    sizes[s] = v;
+    jami += v;
   });
   lastBc++;
   var row = {
-    id: Date.now(), bc: String(lastBc),
-    sana: document.getElementById('k-sana').value,
-    client: client, product: product,
-    color: document.getElementById('k-color').value.trim(),
-    trim: document.getElementById('k-trim').value.trim(),
-    kg: document.getElementById('k-kg').value.trim(),
-    sizes: sizes, jami: jami
+    id:Date.now(), bc:String(lastBc),
+    sana:document.getElementById('k-sana').value,
+    client:client, product:product,
+    color:document.getElementById('k-color').value.trim(),
+    trim:document.getElementById('k-trim').value.trim(),
+    kg:document.getElementById('k-kg').value.trim(),
+    sizes:sizes, jami:jami
   };
   kirimData.push(row);
   renderKirim();
   clearKirimForm();
   doPrint([row]);
-  toast('✅ Кирим қўшилди — стикер чоп этилмоқда');
+  toast('Kirim qoshildi');
   jsonp(OMBOR_URL, {
     action:'addKirim', sana:row.sana, bc:row.bc, trim:row.trim,
     client:row.client, product:row.product, color:row.color,
     sizes:JSON.stringify(row.sizes), jami:row.jami, kg:row.kg
   }, function(err, d) {
-    if (!err && d && d.status === 'ok') toast('✅ Sheets — Кирим ёзилди');
-    else toast('⚠️ Sheets га ёзилмади');
+    if (!err && d && d.status === 'ok') toast('Sheets — Kirim yozildi');
+    else toast('Sheets ga yozilmadi');
   });
 }
 
@@ -598,24 +580,26 @@ function clearKirimForm() {
 }
 
 function renderKirim() {
-  var q = (document.getElementById('k-search').value||'').toLowerCase();
+  var q = (document.getElementById('k-search').value || '').toLowerCase();
   var rows = kirimData.filter(function(r) {
     return !q || [r.bc,r.client,r.product,r.color,r.trim].some(function(v) {
-      return String(v||'').toLowerCase().includes(q);
+      return String(v || '').toLowerCase().indexOf(q) !== -1;
     });
   });
   var tb = document.getElementById('kirim-tbody');
   if (!rows.length) {
-    tb.innerHTML = '<tr><td colspan="11" class="empty">Маълумот йўқ</td></tr>';
+    tb.innerHTML = '<tr><td colspan="11" class="empty">Ma\'lumot yoq</td></tr>';
     return;
   }
-  tb.innerHTML = rows.map(function(r, i) {
+  var html = '';
+  rows.forEach(function(r, i) {
     var key = String(r.id || r.bc);
     var sel = selIds.has(key);
-    var delBtn = isOperator
-      ? '<button onclick="deleteKirim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">🗑</button>'
-      : '';
-    return '<tr style="' + (sel ? 'background:#e8f0fe' : '') + '">'
+    var delBtn = '';
+    if (isOperator) {
+      delBtn = '<button onclick="deleteKirim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">Del</button>';
+    }
+    html += '<tr style="' + (sel ? 'background:#e8f0fe' : '') + '">'
       + '<td><input type="checkbox" ' + (sel ? 'checked' : '') + ' onchange="toggleSel(\'' + key + '\',this)"></td>'
       + '<td style="color:#bbb">' + (i+1) + '</td>'
       + '<td><span class="bc-badge">' + r.bc + '</span></td>'
@@ -627,119 +611,111 @@ function renderKirim() {
       + '<td><b>' + r.jami + '</b></td>'
       + '<td>' + r.kg + '</td>'
       + '<td style="display:flex;gap:4px">'
-      + '<button onclick="doPrint([kirimData.find(function(x){return String(x.id||x.bc)===\'' + key + '\'})])" style="padding:3px 9px;font-size:11px;border:1px solid #1a1a2e;border-radius:4px;cursor:pointer;background:#fff">🖨</button>'
+      + '<button onclick="printOne(\'' + key + '\')" style="padding:3px 9px;font-size:11px;border:1px solid #1a1a2e;border-radius:4px;cursor:pointer;background:#fff">QR</button>'
       + delBtn
       + '</td></tr>';
-  }).join('');
+  });
+  tb.innerHTML = html;
+}
+
+function printOne(key) {
+  var r = kirimData.find(function(x) { return String(x.id || x.bc) === key; });
+  if (r) doPrint([r]);
 }
 
 function toggleSel(id, cb) { if (cb.checked) selIds.add(id); else selIds.delete(id); }
 function toggleAll(cb) {
   kirimData.forEach(function(r) {
-    var k = String(r.id||r.bc);
+    var k = String(r.id || r.bc);
     if (cb.checked) selIds.add(k); else selIds.delete(k);
   });
   renderKirim();
 }
-function selAll() { kirimData.forEach(function(r) { selIds.add(String(r.id||r.bc)); }); renderKirim(); }
+function selAll() { kirimData.forEach(function(r) { selIds.add(String(r.id || r.bc)); }); renderKirim(); }
 function deselAll() { selIds.clear(); renderKirim(); }
 function printSelected() {
-  if (!selIds.size) { toast('Аввал қаторларни белгиланг!'); return; }
-  doPrint(kirimData.filter(function(r) { return selIds.has(String(r.id||r.bc)); }));
+  if (!selIds.size) { toast('Avval qatorlarni belgilang!'); return; }
+  doPrint(kirimData.filter(function(r) { return selIds.has(String(r.id || r.bc)); }));
 }
 function deleteKirim(id) {
-  if (!confirm('Бу қаторни ўчиришга ишончингиз комилми?')) return;
-  var row = kirimData.find(function(r) { return String(r.id||r.bc) === id; });
-  kirimData = kirimData.filter(function(r) { return String(r.id||r.bc) !== id; });
+  if (!confirm('Ochirish?')) return;
+  var row = kirimData.find(function(r) { return String(r.id || r.bc) === id; });
+  kirimData = kirimData.filter(function(r) { return String(r.id || r.bc) !== id; });
   renderKirim();
-  toast('🗑 Кирим ўчирилди');
+  toast('Kirim ochirildi');
   if (row) {
     jsonp(OMBOR_URL, {action:'deleteKirim', bc:row.bc}, function(err, d) {
-      if (!err && d && d.status === 'ok') toast('✅ Sheets\'дан ҳам ўчирилди');
+      if (!err && d && d.status === 'ok') toast('Sheets\'dan ham ochirildi');
     });
   }
 }
 
-// ═══ ЧИҚИМ — СКАНЕР ═══
+// Chiqim skaner
 function focusScan() { document.getElementById('scan-inp').focus(); }
 
-var scanTimer = null;
-function scanInput(val) {
+document.getElementById('scan-inp').addEventListener('input', function() {
   clearTimeout(scanTimer);
+  var val = this.value;
   if (!val.trim()) return;
   scanTimer = setTimeout(function() { processScan(val); }, 300);
-}
-function scanKeyDown(e) {
+});
+document.getElementById('scan-inp').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     clearTimeout(scanTimer);
-    processScan(document.getElementById('scan-inp').value);
+    processScan(this.value);
   }
-}
+});
 
 function processScan(val) {
   val = val.trim();
   if (!val) return;
   document.getElementById('scan-inp').value = '';
-
   if (!isOperator) { showAuth(); return; }
-
   var sana = document.getElementById('ch-sana').value;
-  if (!sana) { toast('⚠️ Аввал санани танланг!'); return; }
-
+  if (!sana) { toast('Avval sanani tanlang!'); return; }
   var found = kirimData.find(function(r) { return r.bc === val; });
-  var res = document.getElementById('scan-result');
-  var box = document.getElementById('scanner-area');
-
+  var res   = document.getElementById('scan-result');
+  var box   = document.getElementById('scanner-area');
   if (!found) {
-    res.innerHTML = '<div class="not-found">❌ Баркод топилмади: <b>' + val + '</b></div>';
+    res.innerHTML = '<div class="not-found">Barkod topilmadi: ' + val + '</div>';
     flashBox(box, 'err');
     playBeep('err');
     return;
   }
-
   var used = chiqimData.find(function(c) { return c.bc === val; });
   if (used) {
-    res.innerHTML = '<div class="not-found">⛔ <b>#' + val + '</b> аллақачон чиқим қилинган!<br>'
-      + '<small>' + used.sana + ' | ' + used.client + ' | ' + used.qty + ' дона</small></div>';
+    res.innerHTML = '<div class="not-found">' + val + ' allaqachon chiqim qilingan! ' + used.sana + ' | ' + used.qty + ' dona</div>';
     flashBox(box, 'err');
     playBeep('err');
     return;
   }
-
-  // Muvaffaqiyat - qo'shamiz
   var rec = {
-    id: Date.now(), bc: found.bc, trim: found.trim,
-    product: found.product, color: found.color,
-    client: found.client, buyer: found.client,
-    qty: found.jami, sana: sana,
-    sizes: found.sizes || {},
-    holat: '⏳ Kutilmoqda', pending: true
+    id:Date.now(), bc:found.bc, trim:found.trim,
+    product:found.product, color:found.color,
+    client:found.client, buyer:found.client,
+    qty:found.jami, sana:sana,
+    sizes:found.sizes || {},
+    holat:'Kutilmoqda', pending:true
   };
   chiqimData.push(rec);
   renderChiqim();
   updateSaveBtn();
-
-  // Hisoblagich
   var cnt = parseInt(document.getElementById('scan-count').textContent) || 0;
   document.getElementById('scan-count').textContent = cnt + 1;
-
-  res.innerHTML = '<div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px">'
+  res.innerHTML = '<div class="found-box" style="display:flex;align-items:center;gap:12px">'
     + '<div style="font-size:28px">✅</div>'
-    + '<div>'
-    + '<div style="font-weight:700;font-size:14px">#' + found.bc + ' — ' + found.product + '</div>'
-    + '<div style="font-size:12px;color:#555">' + found.color + ' | ' + found.client + ' | ' + found.jami + ' дона</div>'
-    + '</div></div>';
-
+    + '<div><b style="font-size:14px">#' + found.bc + ' — ' + found.product + '</b>'
+    + '<br><span style="font-size:12px;color:#555">' + found.color + ' | ' + found.client + ' | ' + found.jami + ' dona</span></div>'
+    + '</div>';
   flashBox(box, 'ok');
   playBeep('ok');
-
   setTimeout(function() { focusScan(); }, 300);
 }
 
 function flashBox(box, type) {
-  box.classList.remove('ok','err');
+  box.classList.remove('ok', 'err');
   box.classList.add(type);
-  setTimeout(function() { box.classList.remove('ok','err'); }, 800);
+  setTimeout(function() { box.classList.remove('ok', 'err'); }, 800);
 }
 
 function updateSaveBtn() {
@@ -756,34 +732,46 @@ function updateSaveBtn() {
 
 function saveAllChiqim() {
   var pending = chiqimData.filter(function(r) { return r.pending; });
-  if (!pending.length) { toast('Сақланадиган маълумот йўқ'); return; }
+  if (!pending.length) { toast('Saqlanadigan ma\'lumot yoq'); return; }
   var btn = document.getElementById('saveAllBtn');
-  btn.textContent = '⏳ Юборилмоқда...';
+  btn.textContent = 'Yuborilmoqda...';
   btn.disabled = true;
+  var rows = pending.map(function(r) {
+    return {sana:r.sana, bc:r.bc, trim:r.trim, client:r.client,
+      product:r.product, color:r.color, buyer:r.buyer, qty:r.qty, sizes:r.sizes || {}};
+  });
+  jsonp(OMBOR_URL, {action:'addChiqimBatch', rows:JSON.stringify(rows)}, function(err, d) {
+    btn.disabled = false;
+    if (!err && d && d.status === 'ok') {
+      pending.forEach(function(r) { r.holat = 'Yozildi'; r.pending = false; });
+      renderChiqim();
+      updateSaveBtn();
+      toast(pending.length + ' ta chiqim Google Sheets\'ga yozildi!');
+      playBeep('ok');
+    } else {
+      // Bitta-bitta yuborish
+      toast('Xato — alohida yuborilmoqda...');
+      saveChiqimOne(pending, btn);
+    }
+  });
+}
+
+function saveChiqimOne(pending, btn) {
   var total = pending.length, done = 0, errors = 0;
   pending.forEach(function(rec) {
     jsonp(OMBOR_URL, {
       action:'addChiqim', sana:rec.sana, bc:rec.bc, trim:rec.trim,
       client:rec.client, product:rec.product, color:rec.color,
-      buyer:rec.buyer, qty:rec.qty, sizes:JSON.stringify(rec.sizes||{})
+      buyer:rec.buyer, qty:rec.qty, sizes:JSON.stringify(rec.sizes || {})
     }, function(err, d) {
       done++;
-      if (!err && d && d.status === 'ok') {
-        rec.holat = '✅ Ёзилди'; rec.pending = false;
-      } else {
-        rec.holat = '⚠️ Хато'; errors++;
-      }
+      if (!err && d && d.status === 'ok') { rec.holat = 'Yozildi'; rec.pending = false; }
+      else { rec.holat = 'Xato'; errors++; }
       renderChiqim();
       if (done === total) {
-        btn.disabled = false;
         updateSaveBtn();
-        if (errors === 0) {
-          toast('✅ ' + total + ' та чиқим Google Sheets\'га ёзилди!');
-          playBeep('ok');
-        } else {
-          toast('⚠️ ' + errors + ' та ёзилмади');
-          playBeep('err');
-        }
+        toast(errors === 0 ? (total + ' ta yozildi!') : (errors + ' ta yozilmadi'));
+        playBeep(errors === 0 ? 'ok' : 'err');
       }
     });
   });
@@ -792,15 +780,16 @@ function saveAllChiqim() {
 function renderChiqim() {
   var tb = document.getElementById('ch-tbody');
   if (!chiqimData.length) {
-    tb.innerHTML = '<tr><td colspan="10" class="empty">Чиқим йўқ</td></tr>';
+    tb.innerHTML = '<tr><td colspan="10" class="empty">Chiqim yoq</td></tr>';
     return;
   }
-  tb.innerHTML = chiqimData.map(function(r, i) {
-    var key = String(r.id||r.bc);
+  var html = '';
+  chiqimData.forEach(function(r, i) {
+    var key = String(r.id || r.bc);
     var delBtn = isOperator
-      ? '<button onclick="deleteChiqim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">🗑</button>'
-      : '—';
-    return '<tr>'
+      ? '<button onclick="deleteChiqim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">Del</button>'
+      : '';
+    html += '<tr>'
       + '<td style="color:#bbb">' + (i+1) + '</td>'
       + '<td><span class="bc-badge">' + r.bc + '</span></td>'
       + '<td style="font-family:monospace;font-size:11px">' + r.trim + '</td>'
@@ -809,48 +798,53 @@ function renderChiqim() {
       + '<td>' + r.product + '</td>'
       + '<td>' + r.color + '</td>'
       + '<td><b>' + r.qty + '</b></td>'
-      + '<td>' + (r.holat||'—') + '</td>'
+      + '<td>' + (r.holat || '') + '</td>'
       + '<td>' + delBtn + '</td>'
       + '</tr>';
-  }).join('');
+  });
+  tb.innerHTML = html;
 }
 
 function deleteChiqim(id) {
-  if (!confirm('Ўчиришга ишончингиз комилми?')) return;
-  var row = chiqimData.find(function(r) { return String(r.id||r.bc) === id; });
-  chiqimData = chiqimData.filter(function(r) { return String(r.id||r.bc) !== id; });
+  if (!confirm('Ochirish?')) return;
+  var row = chiqimData.find(function(r) { return String(r.id || r.bc) === id; });
+  chiqimData = chiqimData.filter(function(r) { return String(r.id || r.bc) !== id; });
   renderChiqim();
   updateSaveBtn();
-  toast('🗑 Чиқим ўчирилди');
+  toast('Chiqim ochirildi');
   if (row && !row.pending) {
     jsonp(OMBOR_URL, {action:'deleteChiqim', bc:row.bc}, function(err, d) {
-      if (!err && d && d.status === 'ok') toast('✅ Sheets\'дан ҳам ўчирилди');
+      if (!err && d && d.status === 'ok') toast('Sheets\'dan ham ochirildi');
     });
   }
 }
 
-// ═══ БУГУН ═══
+// Bugun
 function renderBugun() {
   var today = new Date().toISOString().slice(0,10);
   var rows = [], tk = 0, tc = 0;
   kirimData.filter(function(r) { return r.sana === today; }).forEach(function(r) {
-    tk += (parseInt(r.jami)||0);
+    tk += parseInt(r.jami) || 0;
     rows.push({type:'kirim', bc:r.bc, trim:r.trim, product:r.product, color:r.color, who:r.client, qty:r.jami});
   });
   chiqimData.filter(function(r) { return r.sana === today; }).forEach(function(r) {
-    tc += (parseInt(r.qty)||0);
+    tc += parseInt(r.qty) || 0;
     rows.push({type:'chiqim', bc:r.bc, trim:r.trim, product:r.product, color:r.color, who:r.buyer, qty:r.qty});
   });
   document.getElementById('stats').innerHTML =
-    '<div class="stat-card"><div class="stat-num" style="color:#1a1a2e">' + tk + '</div><div class="stat-lbl">📥 Бугун кирди</div></div>' +
-    '<div class="stat-card"><div class="stat-num" style="color:#e94560">' + tc + '</div><div class="stat-lbl">📤 Бугун чиқди</div></div>' +
-    '<div class="stat-card"><div class="stat-num" style="color:#27ae60">' + (tk-tc) + '</div><div class="stat-lbl">📊 Баланс</div></div>';
+    '<div class="stat-card"><div class="stat-num" style="color:#1a1a2e">' + tk + '</div><div class="stat-lbl">Bugun kirdi</div></div>' +
+    '<div class="stat-card"><div class="stat-num" style="color:#e94560">' + tc + '</div><div class="stat-lbl">Bugun chiqdi</div></div>' +
+    '<div class="stat-card"><div class="stat-num" style="color:#27ae60">' + (tk-tc) + '</div><div class="stat-lbl">Balans</div></div>';
   var tb = document.getElementById('bugun-tbody');
-  if (!rows.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Бугун ҳаракат йўқ</td></tr>'; return; }
-  tb.innerHTML = rows.map(function(r) {
+  if (!rows.length) {
+    tb.innerHTML = '<tr><td colspan="7" class="empty">Bugun harakat yoq</td></tr>';
+    return;
+  }
+  var html = '';
+  rows.forEach(function(r) {
     var ik = r.type === 'kirim';
-    return '<tr>'
-      + '<td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:' + (ik?'#e8f5e9':'#ffeaea') + ';color:' + (ik?'#2e7d32':'#c62828') + '">' + (ik?'📥 Кирим':'📤 Чиқим') + '</span></td>'
+    html += '<tr>'
+      + '<td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:' + (ik?'#e8f5e9':'#ffeaea') + ';color:' + (ik?'#2e7d32':'#c62828') + '">' + (ik?'Kirim':'Chiqim') + '</span></td>'
       + '<td><span class="bc-badge">' + r.bc + '</span></td>'
       + '<td style="font-family:monospace;font-size:11px">' + r.trim + '</td>'
       + '<td>' + r.product + '</td>'
@@ -858,10 +852,11 @@ function renderBugun() {
       + '<td>' + r.who + '</td>'
       + '<td><b style="color:' + (ik?'#27ae60':'#e94560') + '">' + (ik?'+':'-') + r.qty + '</b></td>'
       + '</tr>';
-  }).join('');
+  });
+  tb.innerHTML = html;
 }
 
-// ═══ СТИКЕР ЧОП ═══
+// Print
 function doPrint(rows) {
   if (!rows || !rows.length || !rows[0]) return;
   var pa = document.getElementById('print-area');
@@ -874,51 +869,61 @@ function doPrint(rows) {
     if (!r) { done++; return; }
     var h = document.createElement('div');
     tmp.appendChild(h);
-    try { new QRCode(h, {text:r.bc, width:130, height:130, colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.M}); } catch(e) {}
+    try {
+      new QRCode(h, {text:r.bc, width:130, height:130,
+        colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.M});
+    } catch(e) {}
     setTimeout(function() {
       var c = h.querySelector('canvas');
       srcs[i] = c ? c.toDataURL('image/png') : '';
       done++;
       if (done === rows.length) {
         document.body.removeChild(tmp);
-        pa.innerHTML = rows.map(function(r2, j) {
-          if (!r2) return '';
+        var html = '';
+        rows.forEach(function(r2, j) {
+          if (!r2) return;
           var szArr = [];
-          if (r2.sizes) ALL_SIZES.forEach(function(s) { if (r2.sizes[s] > 0) szArr.push(s + '(' + r2.sizes[s] + ')'); });
-          return '<div class="sticker">'
+          if (r2.sizes) {
+            ALL_SIZES.forEach(function(s) {
+              if (r2.sizes[s] > 0) szArr.push(s + '(' + r2.sizes[s] + ')');
+            });
+          }
+          html += '<div class="sticker">'
             + '<div class="st-left">'
-            + '<div class="st-header">ТМО Трикотаж</div>'
+            + '<div class="st-header">TMO Trikotaj</div>'
             + '<table class="st-table">'
-            + '<tr><td class="lbl">ID Баркод</td><td class="val bold">' + r2.bc + '</td></tr>'
-            + '<tr><td class="lbl">Тримкарта</td><td class="val">' + r2.trim + '</td></tr>'
-            + '<tr><td class="lbl">Сана</td><td class="val">' + r2.sana + '</td></tr>'
-            + '<tr><td class="lbl">Клиент</td><td class="val">' + r2.client + '</td></tr>'
-            + '<tr><td class="lbl">Маҳсулот</td><td class="val">' + r2.product + '</td></tr>'
-            + '<tr><td class="lbl">Ранги</td><td class="val">' + r2.color + '</td></tr>'
-            + (szArr.length ? '<tr><td class="lbl">Размер</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
-            + '<tr><td class="lbl">Жами</td><td class="val bold">' + r2.jami + ' дона</td></tr>'
-            + '<tr><td class="lbl">Кг</td><td class="val">' + r2.kg + '</td></tr>'
+            + '<tr><td class="lbl">ID Barkod</td><td class="val bold">' + r2.bc + '</td></tr>'
+            + '<tr><td class="lbl">Trimkarta</td><td class="val">' + r2.trim + '</td></tr>'
+            + '<tr><td class="lbl">Sana</td><td class="val">' + r2.sana + '</td></tr>'
+            + '<tr><td class="lbl">Klient</td><td class="val">' + r2.client + '</td></tr>'
+            + '<tr><td class="lbl">Mahsulot</td><td class="val">' + r2.product + '</td></tr>'
+            + '<tr><td class="lbl">Rangi</td><td class="val">' + r2.color + '</td></tr>'
+            + (szArr.length ? '<tr><td class="lbl">Olcham</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
+            + '<tr><td class="lbl">Jami</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
+            + '<tr><td class="lbl">Kg</td><td class="val">' + r2.kg + '</td></tr>'
             + '</table></div>'
             + '<div class="st-right">'
             + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:28mm;height:28mm">' : '<b>' + r2.bc + '</b>')
             + '<div class="st-bc">' + r2.bc + '</div>'
-            + '<div class="st-qr-lbl">QR Код</div>'
+            + '<div class="st-qr-lbl">QR Kod</div>'
             + '</div></div>';
-        }).join('');
+        });
+        pa.innerHTML = html;
         setTimeout(function() { window.print(); }, 200);
       }
     }, 400);
   });
 }
 
-// ═══ TOAST ═══
+// Toast
 function toast(msg) {
   var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
+  t.textContent = msg;
+  t.classList.add('show');
   setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
 
-// ═══ START ═══
+// Start
 updateSizeGrid();
 loadFromSheets();
 </script>
