@@ -547,11 +547,26 @@ function addKirim() {
     kg:document.getElementById('k-kg').value.trim(),
     sizes:sizes, jami:jami
   };
+  // O'lchamlarni saqlash
+  var savedSizes = {};
+  getActiveSizes().forEach(function(s) {
+    var el = document.getElementById('s' + s);
+    if (el) savedSizes[s] = el.value;
+  });
+
   kirimData.push(row);
   renderKirim();
   clearKirimForm();
   doPrint([row]);
   toast('Kirim qoshildi');
+
+  // O'lchamlarni qayta tiklash
+  setTimeout(function() {
+    Object.keys(savedSizes).forEach(function(s) {
+      var el = document.getElementById('s' + s);
+      if (el) el.value = savedSizes[s];
+    });
+  }, 100);
   jsonp(OMBOR_URL, {
     action:'addKirim', sana:row.sana, bc:row.bc, trim:row.trim,
     client:row.client, product:row.product, color:row.color,
