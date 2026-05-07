@@ -588,11 +588,7 @@ function clearKirimForm() {
   document.getElementById('k-sana').valueAsDate = new Date();
   document.getElementById('order-results').style.display = 'none';
 
-  // Faqat o'lchamlar tozalanadi
-  getActiveSizes().forEach(function(s) {
-    var el = document.getElementById('s' + s);
-    if (el) el.value = '';
-  });
+  // O'lchamlar ham saqlanib qoladi
 }
 
 function renderKirim() {
