@@ -151,22 +151,32 @@ tr:hover td{background:#fafafa}
       <div class="form-group"><label>Sana</label><input id="k-sana" type="date"></div>
     </div>
     <div style="margin-top:12px">
-      <label style="font-size:11px;color:#777;font-weight:600">OLCHAMLAR — diapazon:</label>
-      <div style="display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap">
-        <span style="font-size:12px;color:#666">Dan:</span>
-        <select id="size-from" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
-          <option>40</option><option>42</option><option>44</option><option>46</option>
-          <option>48</option><option>50</option><option>52</option><option>54</option>
-          <option>56</option><option>58</option><option>60</option><option>62</option>
-          <option>64</option><option>66</option><option>68</option>
-        </select>
-        <span style="font-size:12px;color:#666">Gacha:</span>
-        <select id="size-to" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
-          <option>40</option><option>42</option><option>44</option><option>46</option>
-          <option>48</option><option selected>50</option><option>52</option><option>54</option>
-          <option>56</option><option>58</option><option>60</option><option>62</option>
-          <option>64</option><option>66</option><option>68</option>
-        </select>
+      <label style="font-size:11px;color:#777;font-weight:600">O'LCHAMLAR TURI:</label>
+      <div style="display:flex;gap:6px;margin:8px 0;align-items:center;flex-wrap:wrap">
+        <button id="btn-num" onclick="switchSizeType('num')"
+          style="padding:5px 16px;border:2px solid #1a1a2e;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;background:#1a1a2e;color:#fff">
+          Raqamli
+        </button>
+        <button id="btn-char" onclick="switchSizeType('char')"
+          style="padding:5px 16px;border:2px solid #1a1a2e;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#1a1a2e">
+          Harfli
+        </button>
+        <span id="size-range-wrap" style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:12px;color:#666">Dan:</span>
+          <select id="size-from" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
+            <option>40</option><option>42</option><option>44</option><option>46</option>
+            <option>48</option><option>50</option><option>52</option><option>54</option>
+            <option>56</option><option>58</option><option>60</option><option>62</option>
+            <option>64</option><option>66</option><option>68</option>
+          </select>
+          <span style="font-size:12px;color:#666">Gacha:</span>
+          <select id="size-to" onchange="updateSizeGrid()" style="padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-weight:700">
+            <option>40</option><option>42</option><option>44</option><option>46</option>
+            <option>48</option><option selected>50</option><option>52</option><option>54</option>
+            <option>56</option><option>58</option><option>60</option><option>62</option>
+            <option>64</option><option>66</option><option>68</option>
+          </select>
+        </span>
       </div>
       <div class="sizes-grid" id="sizes-grid"></div>
     </div>
@@ -265,9 +275,12 @@ tr:hover td{background:#fafafa}
 
 <script>
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbwjoZww-vZmIJBrOwTizvyfcUQev6rQxu6tksXg9jr0mK8jsqGtvua1NqdYMLhVkGFRZg/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycby5zccteS9ySy_91pYUSzF9jKmQA6eQw_NrbpDEJRdVUtyIJ6OqNlh4hd5B63jpbeMhGw/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbwHWze0p0_CAUuWc_p3QAKLPacw32PgqFsPJmY0UErwHp3Anf1k5TpA76zLCyfbAmiY0w/exec';
 var OPERATOR_PASS = 'tmo2024';
-var ALL_SIZES = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
+var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
+var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
+var SIZE_TYPE = 'num'; // 'num' yoki 'char'
+var ALL_SIZES = ALL_SIZES_NUM;
 
 var kirimData  = [];
 var chiqimData = [];
@@ -506,19 +519,34 @@ function fillForm(item) {
 
 // Size grid
 function getActiveSizes() {
+  if (SIZE_TYPE === 'char') {
+    return ALL_SIZES_CHAR.slice();
+  }
   var from = parseInt(document.getElementById('size-from').value) || 40;
   var to   = parseInt(document.getElementById('size-to').value)   || 60;
   if (from > to) { var t = from; from = to; to = t; }
-  return ALL_SIZES.filter(function(s) { return s >= from && s <= to; });
+  return ALL_SIZES_NUM.filter(function(s) { return s >= from && s <= to; });
+}
+
+function switchSizeType(type) {
+  SIZE_TYPE = type;
+  ALL_SIZES = type === 'char' ? ALL_SIZES_CHAR : ALL_SIZES_NUM;
+  // Tugmalar holati
+  document.getElementById('btn-num').style.background  = type === 'num'  ? '#1a1a2e' : '#fff';
+  document.getElementById('btn-num').style.color        = type === 'num'  ? '#fff'    : '#1a1a2e';
+  document.getElementById('btn-char').style.background = type === 'char' ? '#1a1a2e' : '#fff';
+  document.getElementById('btn-char').style.color       = type === 'char' ? '#fff'    : '#1a1a2e';
+  // Diapazon tanlash faqat raqamlida ko'rinadi
+  var rangeWrap = document.getElementById('size-range-wrap');
+  if (rangeWrap) rangeWrap.style.display = type === 'num' ? 'flex' : 'none';
+  updateSizeGrid();
 }
 
 function updateSizeGrid() {
   var active = getActiveSizes();
   var old = {};
-  ALL_SIZES.forEach(function(s) {
-    var el = document.getElementById('s' + s);
-    if (el) old[s] = el.value;
-  });
+  ALL_SIZES_NUM.forEach(function(s) { var el = document.getElementById('s' + s); if (el) old[s] = el.value; });
+  ALL_SIZES_CHAR.forEach(function(s) { var el = document.getElementById('s' + s); if (el) old[s] = el.value; });
   document.getElementById('sizes-grid').innerHTML = active.map(function(s) {
     return '<div class="size-item"><label>' + s + '</label>'
       + '<input id="s' + s + '" type="number" min="0" placeholder="0" value="' + (old[s] || '') + '"></div>';
