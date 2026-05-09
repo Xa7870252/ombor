@@ -274,8 +274,8 @@ tr:hover td{background:#fafafa}
 <div id="toast"></div>
 
 <script>
-var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbx9FHj6QM_nZOsMl56KpChzoGX8-IEbEiqH4fWruT2fJuE-gUdbDCleakihKlJWm3SwVg/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbz-mh5VEj5xKFVF1qhhyymI9e2_dzoOEp2WKugFPpY7eRzUyMcOUVHapxlzphRRDVysuw/exec';
+var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbyBKT1YjUqK0ptz2uOu91vJCAxtzbK7-DnMB5AlPHobM7nqCIoSuuA7jIB3n0H8yJWb8g/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxxMriCYXT92lI-_G4DQeK2c_q_iVvbwNfUnoY5Sm1kT58FmaIqdOLqUUD806Db70vYlQ/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
@@ -945,22 +945,22 @@ function doPrint(rows) {
           }
           html += '<div class="sticker">'
             + '<div class="st-left">'
-            + '<div class="st-header">EGIN TEXTILE GROUP</div>'
+            + '<div class="st-header">TMO Trikotaj</div>'
             + '<table class="st-table">'
-            + '<tr><td class="lbl">ID Баркод</td><td class="val bold">' + r2.bc + '</td></tr>'
-            + '<tr><td class="lbl">Номер Заказа</td><td class="val">' + r2.trim + '</td></tr>'
-            + '<tr><td class="lbl">Дата</td><td class="val">' + r2.sana + '</td></tr>'
-            + '<tr><td class="lbl">Клиент</td><td class="val">' + r2.client + '</td></tr>'
-            + '<tr><td class="lbl">Наименование товара</td><td class="val">' + r2.product + '</td></tr>'
-            + '<tr><td class="lbl">Цвет</td><td class="val">' + r2.color + '</td></tr>'
-            + (szArr.length ? '<tr><td class="lbl">Размер</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
-            + '<tr><td class="lbl">Итого</td><td class="val bold">' + r2.jami + ' шт</td></tr>'
-            + '<tr><td class="lbl">Кг</td><td class="val">' + r2.kg + '</td></tr>'
+            + '<tr><td class="lbl">ID Barkod</td><td class="val bold">' + r2.bc + '</td></tr>'
+            + '<tr><td class="lbl">Trimkarta</td><td class="val">' + r2.trim + '</td></tr>'
+            + '<tr><td class="lbl">Sana</td><td class="val">' + r2.sana + '</td></tr>'
+            + '<tr><td class="lbl">Klient</td><td class="val">' + r2.client + '</td></tr>'
+            + '<tr><td class="lbl">Mahsulot</td><td class="val">' + r2.product + '</td></tr>'
+            + '<tr><td class="lbl">Rangi</td><td class="val">' + r2.color + '</td></tr>'
+            + (szArr.length ? '<tr><td class="lbl">Olcham</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
+            + '<tr><td class="lbl">Jami</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
+            + '<tr><td class="lbl">Kg</td><td class="val">' + r2.kg + '</td></tr>'
             + '</table></div>'
             + '<div class="st-right">'
             + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:28mm;height:28mm">' : '<b>' + r2.bc + '</b>')
             + '<div class="st-bc">' + r2.bc + '</div>'
-            + '<div class="st-qr-lbl">QR Код</div>'
+            + '<div class="st-qr-lbl">QR Kod</div>'
             + '</div></div>';
         });
         pa.innerHTML = html;
