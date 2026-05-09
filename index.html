@@ -945,17 +945,17 @@ function doPrint(rows) {
           }
           html += '<div class="sticker">'
             + '<div class="st-left">'
-            + '<div class="st-header">TMO Trikotaj</div>'
+            + '<div class="st-header">EGIN TEXTILE GROUP</div>'
             + '<table class="st-table">'
-            + '<tr><td class="lbl">ID Barkod</td><td class="val bold">' + r2.bc + '</td></tr>'
-            + '<tr><td class="lbl">Trimkarta</td><td class="val">' + r2.trim + '</td></tr>'
-            + '<tr><td class="lbl">Sana</td><td class="val">' + r2.sana + '</td></tr>'
-            + '<tr><td class="lbl">Klient</td><td class="val">' + r2.client + '</td></tr>'
-            + '<tr><td class="lbl">Mahsulot</td><td class="val">' + r2.product + '</td></tr>'
-            + '<tr><td class="lbl">Rangi</td><td class="val">' + r2.color + '</td></tr>'
-            + (szArr.length ? '<tr><td class="lbl">Olcham</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
-            + '<tr><td class="lbl">Jami</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
-            + '<tr><td class="lbl">Kg</td><td class="val">' + r2.kg + '</td></tr>'
+            + '<tr><td class="lbl">ID Баркод</td><td class="val bold">' + r2.bc + '</td></tr>'
+            + '<tr><td class="lbl">Номер Заказа</td><td class="val">' + r2.trim + '</td></tr>'
+            + '<tr><td class="lbl">Дата</td><td class="val">' + r2.sana + '</td></tr>'
+            + '<tr><td class="lbl">Клиент</td><td class="val">' + r2.client + '</td></tr>'
+            + '<tr><td class="lbl">Наименование товара</td><td class="val">' + r2.product + '</td></tr>'
+            + '<tr><td class="lbl">Цвет</td><td class="val">' + r2.color + '</td></tr>'
+            + (szArr.length ? '<tr><td class="lbl">Размер</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
+            + '<tr><td class="lbl">Итого</td><td class="val bold">' + r2.jami + ' шт</td></tr>'
+            + '<tr><td class="lbl">Кг</td><td class="val">' + r2.kg + '</td></tr>'
             + '</table></div>'
             + '<div class="st-right">'
             + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:28mm;height:28mm">' : '<b>' + r2.bc + '</b>')
