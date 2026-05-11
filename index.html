@@ -785,26 +785,47 @@ function updateSaveBtn() {
   }
 }
 
+// --- САҚЛАШ ВА ЖАДВАЛНИ ЧИҚАРИШ ФУНКЦИЯЛАРИ ---
+
 function saveAllChiqim() {
   var pending = chiqimData.filter(function(r) { return r.pending; });
   if (!pending.length) { toast('Saqlanadigan ma\'lumot yoq'); return; }
+  
   var btn = document.getElementById('saveAllBtn');
+  if (btn.disabled) return; // Такрорий босишдан ҳимоя
+
   btn.textContent = 'Yuborilmoqda...';
   btn.disabled = true;
+
+  // Гуглга юбориладиган маълумотлар пакети
   var rows = pending.map(function(r) {
-    return {sana:r.sana, bc:r.bc, trim:r.trim, client:r.client,
-      product:r.product, color:r.color, buyer:r.buyer, qty:r.qty, sizes:r.sizes || {}};
+    return {
+      sana: r.sana, 
+      bc: r.bc, 
+      trim: r.trim, 
+      client: r.client,
+      product: r.product, 
+      color: r.color, 
+      buyer: r.buyer, 
+      qty: r.qty, 
+      kg: r.kg || 0, // КГ маълумоти энди тушиб қолмайди
+      sizes: r.sizes || {}
+    };
   });
+
   jsonp(OMBOR_URL, {action:'addChiqimBatch', rows:JSON.stringify(rows)}, function(err, d) {
     btn.disabled = false;
+    btn.textContent = 'Saqlash';
+    
     if (!err && d && d.status === 'ok') {
-      pending.forEach(function(r) { r.holat = 'Yozildi'; r.pending = false; });
+      // Юборилганларни рўйхатдан ўчириш (экран тозаланади)
+      chiqimData = chiqimData.filter(function(r) { return !r.pending; });
+      
       renderChiqim();
       updateSaveBtn();
-      toast(pending.length + ' ta chiqim Google Sheets\'ga yozildi!');
+      toast(pending.length + ' ta chiqim saqlandi!');
       playBeep('ok');
     } else {
-      // Bitta-bitta yuborish
       toast('Xato — alohida yuborilmoqda...');
       saveChiqimOne(pending, btn);
     }
@@ -815,15 +836,29 @@ function saveChiqimOne(pending, btn) {
   var total = pending.length, done = 0, errors = 0;
   pending.forEach(function(rec) {
     jsonp(OMBOR_URL, {
-      action:'addChiqim', sana:rec.sana, bc:rec.bc, trim:rec.trim,
-      client:rec.client, product:rec.product, color:rec.color,
-      buyer:rec.buyer, qty:rec.qty, sizes:JSON.stringify(rec.sizes || {})
+      action:'addChiqim', 
+      sana:rec.sana, 
+      bc:rec.bc, 
+      trim:rec.trim,
+      client:rec.client, 
+      product:rec.product, 
+      color:rec.color,
+      buyer:rec.buyer, 
+      qty:rec.qty, 
+      kg:rec.kg || 0,
+      sizes:JSON.stringify(rec.sizes || {})
     }, function(err, d) {
       done++;
-      if (!err && d && d.status === 'ok') { rec.holat = 'Yozildi'; rec.pending = false; }
-      else { rec.holat = 'Xato'; errors++; }
+      if (!err && d && d.status === 'ok') { 
+        rec.pending = false; 
+        // Юборилганни ўчириш
+        chiqimData = chiqimData.filter(function(x) { return x.bc !== rec.bc || x.pending; });
+      } else { 
+        errors++; 
+      }
       renderChiqim();
       if (done === total) {
+        btn.disabled = false;
         updateSaveBtn();
         toast(errors === 0 ? (total + ' ta yozildi!') : (errors + ' ta yozilmadi'));
         playBeep(errors === 0 ? 'ok' : 'err');
@@ -835,25 +870,26 @@ function saveChiqimOne(pending, btn) {
 function renderChiqim() {
   var tb = document.getElementById('ch-tbody');
   if (!chiqimData.length) {
-    tb.innerHTML = '<tr><td colspan="10" class="empty">Chiqim yoq</td></tr>';
+    tb.innerHTML = '<tr><td colspan="11" class="empty">Chiqim yoq</td></tr>';
     return;
   }
   var html = '';
   chiqimData.forEach(function(r, i) {
     var key = String(r.id || r.bc);
     var delBtn = isOperator
-      ? '<button onclick="deleteChiqim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">Del</button>'
+      ? '<button onclick="deleteChiqim(\'' + key + '\')" style="padding:3px 8px; font-size:11px; border:1px solid #e94560; border-radius:4px; color:#e94560; background:#fff; cursor:pointer;">Del</button>'
       : '';
+    
     html += '<tr>'
       + '<td style="color:#bbb">' + (i+1) + '</td>'
       + '<td><span class="bc-badge">' + r.bc + '</span></td>'
-      + '<td style="font-family:monospace;font-size:11px">' + r.trim + '</td>'
-      + '<td>' + r.sana + '</td>'
-      + '<td>' + r.buyer + '</td>'
       + '<td>' + r.product + '</td>'
       + '<td>' + r.color + '</td>'
       + '<td><b>' + r.qty + '</b></td>'
-      + '<td>' + (r.holat || '') + '</td>'
+      + '<td>' + (r.kg || 0) + '</td>' // КГ устуни энди сайтда кўринади
+      + '<td>' + r.buyer + '</td>'
+      + '<td>' + r.sana + '</td>'
+      + '<td>' + (r.pending ? '<span style="color:#f39c12">Kutilmoqda...</span>' : '<span style="color:#27ae60">Yozildi</span>') + '</td>'
       + '<td>' + delBtn + '</td>'
       + '</tr>';
   });
