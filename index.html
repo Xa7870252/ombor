@@ -333,8 +333,8 @@ var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
 var SIZE_TYPE = 'num'; // 'num' yoki 'char'
 var ALL_SIZES = ALL_SIZES_NUM;
 
-var kirimData  = [];
-var chiqimData = [];
+kirimData = (d.kirim || []).map(normalizeKirimRow);
+chiqimData = (d.chiqim || []).map(normalizeChiqimRow);
 var lastBc     = 10001;
 var selIds     = new Set();
 var isOperator = false;
