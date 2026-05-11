@@ -916,18 +916,86 @@ function doPrint(rows) {
   if (!rows || !rows.length || !rows[0]) return;
   var pa = document.getElementById('print-area');
   pa.innerHTML = '';
+  
+  // 100x60mm ўлчам учун янгиланган стиллар
+  var style = document.createElement('style');
+  style.innerHTML = `
+    .sticker {
+      width: 100mm;
+      height: 60mm;
+      padding: 3mm 5mm;
+      border: 0.1mm solid #eee;
+      margin-bottom: 5px;
+      display: flex;
+      overflow: hidden;
+      page-break-inside: avoid;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .st-left { 
+      width: 65%; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between;
+    }
+    .st-right { 
+      width: 35%; 
+      text-align: center; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center;
+      border-left: 1px dashed #ccc;
+    }
+    .st-header { 
+      font-size: 14pt; 
+      font-weight: bold; 
+      text-transform: uppercase; 
+      border-bottom: 2px solid #000; 
+      margin-bottom: 3mm;
+      color: #000;
+    }
+    .st-table { width: 100%; border-collapse: collapse; }
+    .st-table td { padding: 1mm 0; line-height: 1.2; }
+    .lbl { color: #444; width: 30%; font-size: 10pt; }
+    .val { font-size: 11pt; font-weight: 600; color: #000; }
+    .bold { font-weight: 800; font-size: 12pt; }
+    .size-box { 
+      background: #f0f0f0; 
+      padding: 2mm; 
+      border-radius: 4px; 
+      font-size: 11pt; 
+      font-weight: bold;
+      margin-top: 2mm;
+    }
+  `;
+  document.head.appendChild(style);
+
   var tmp = document.createElement('div');
   tmp.style.cssText = 'position:fixed;left:-9999px;top:0;width:200px';
   document.body.appendChild(tmp);
+  
   var srcs = [], done = 0;
   rows.forEach(function(r, i) {
     if (!r) { done++; return; }
     var h = document.createElement('div');
     tmp.appendChild(h);
+    
+    // Уникал QR код яратиш
+    var uniqueQR = r.bc + "-" + Date.now(); 
+    
     try {
-      new QRCode(h, {text:r.bc, width:130, height:130,
-        colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.M});
-    } catch(e) {}
+      new QRCode(h, {
+        text: uniqueQR, 
+        width: 180, // 100x60 учун QR кодни каттароқ қилдик
+        height: 180,
+        colorDark: '#000', 
+        colorLight: '#fff', 
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch(e) { console.error(e); }
+
     setTimeout(function() {
       var c = h.querySelector('canvas');
       srcs[i] = c ? c.toDataURL('image/png') : '';
@@ -943,30 +1011,30 @@ function doPrint(rows) {
               if (r2.sizes[s] > 0) szArr.push(s + '(' + r2.sizes[s] + ')');
             });
           }
+          
           html += '<div class="sticker">'
             + '<div class="st-left">'
-            + '<div class="st-header">TMO Trikotaj</div>'
+            + '<div class="st-header">EGIN TEXTILE GROUP</div>'
             + '<table class="st-table">'
-            + '<tr><td class="lbl">ID Barkod</td><td class="val bold">' + r2.bc + '</td></tr>'
-            + '<tr><td class="lbl">Trimkarta</td><td class="val">' + r2.trim + '</td></tr>'
-            + '<tr><td class="lbl">Sana</td><td class="val">' + r2.sana + '</td></tr>'
-            + '<tr><td class="lbl">Klient</td><td class="val">' + r2.client + '</td></tr>'
-            + '<tr><td class="lbl">Mahsulot</td><td class="val">' + r2.product + '</td></tr>'
-            + '<tr><td class="lbl">Rangi</td><td class="val">' + r2.color + '</td></tr>'
-            + (szArr.length ? '<tr><td class="lbl">Olcham</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
-            + '<tr><td class="lbl">Jami</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
-            + '<tr><td class="lbl">Kg</td><td class="val">' + r2.kg + '</td></tr>'
-            + '</table></div>'
+            + '<tr><td class="lbl">Sana:</td><td class="val">' + r2.sana + '</td></tr>'
+            + '<tr><td class="lbl">Mijoz:</td><td class="val">' + r2.client + '</td></tr>'
+            + '<tr><td class="lbl">Nomi:</td><td class="val bold">' + r2.product + '</td></tr>'
+            + '<tr><td class="lbl">Rangi:</td><td class="val">' + r2.color + '</td></tr>'
+            + '<tr><td class="lbl">Vazni:</td><td class="val">' + (r2.kg || '0') + ' kg</td></tr>'
+            + '<tr><td class="lbl">Soni:</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
+            + '</table>'
+            + (szArr.length ? '<div class="size-box">O\'lchamlar: ' + szArr.join(' | ') + '</div>' : '')
+            + '</div>'
             + '<div class="st-right">'
-            + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:28mm;height:28mm">' : '<b>' + r2.bc + '</b>')
-            + '<div class="st-bc">' + r2.bc + '</div>'
-            + '<div class="st-qr-lbl">QR Kod</div>'
+            + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:40mm;height:40mm;margin-bottom:5px">' : '<b>' + r2.bc + '</b>')
+            + '<div style="font-size:12pt; font-weight:bold; letter-spacing:1px">' + r2.bc + '</div>'
+            + '<div style="font-size:8pt; color:#666; margin-top:2px">ID: ' + Date.now().toString().slice(-6) + '</div>'
             + '</div></div>';
         });
         pa.innerHTML = html;
-        setTimeout(function() { window.print(); }, 200);
+        setTimeout(function() { window.print(); }, 400);
       }
-    }, 400);
+    }, 600);
   });
 }
 
