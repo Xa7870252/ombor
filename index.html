@@ -101,57 +101,6 @@ tr:hover td{background:#fafafa}
   .st-bc{font-size:7.5pt;font-weight:700;font-family:monospace;letter-spacing:1.5pt;color:#1a1a2e}
   .st-qr-lbl{font-size:6.5pt;color:#888}
 }
-
-/* Scroll wheel o'chirish */
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-input[type=number] { -moz-appearance: textfield; }
-
-/* Sticker dizayni (100x60mm) - Rasmdagidek tekis chiqishi uchun */
-@media print {
-  @page { size: 100mm 60mm; margin: 0; }
-  .sticker {
-    width: 100mm;
-    height: 60mm;
-    padding: 5mm;
-    display: flex !important;
-    flex-direction: row;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-    page-break-after: always;
-  }
-  .st-left { width: 65%; display: flex; flex-direction: column; }
-  .st-right { 
-    width: 35%; 
-    border-left: 1px dashed #444; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    padding-left: 5px;
-  }
-  .st-header { 
-    font-size: 16pt; 
-    font-weight: 900; 
-    border-bottom: 2px solid #000; 
-    margin-bottom: 3mm; 
-    padding-bottom: 1mm;
-    text-transform: uppercase;
-  }
-  .st-table { width: 100%; border-collapse: collapse; }
-  .st-table td { padding: 2mm 0; border-bottom: 0.5pt solid #eee; font-size: 11pt; }
-  .lbl { color: #555; width: 70px; }
-  .val { font-weight: bold; }
-  .bold { font-size: 13pt; font-weight: 900; }
-  .size-box { 
-    margin-top: auto; 
-    background: #f0f0f0; 
-    padding: 2mm; 
-    font-size: 10pt; 
-    font-weight: bold; 
-    border: 1px solid #ccc;
-  }
-}
-
 </style>
 </head>
 <body>
@@ -325,16 +274,16 @@ input[type=number] { -moz-appearance: textfield; }
 <div id="toast"></div>
 
 <script>
-var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbynmiSt8wzYbKI1TQx1gU_21Htgvqop3q7XOfCGIIA5pwrd05QeRDGNx4gu7tupMIQzAQ/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbwto3H3F-KpOwtPMlR8-kU1TkrlLcUDQA77ei6WxiqOg3-Y6Z7dxnq3KBcxbBYVYEynkQ/exec';
+var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbzDPaC2TLijcje8upbhXzwVwfDFZhi7XCfS-t8YPtpaY3sdBPpMULQcYeqx8P9cNU6kLQ/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbws_-m6YOf4Bv215tD0U1sxmZVVBcHH4Ab_20c16ORAaAtW9cjd8LHf-DmF0sCx8HYPdA/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
 var SIZE_TYPE = 'num'; // 'num' yoki 'char'
 var ALL_SIZES = ALL_SIZES_NUM;
 
-kirimData = (d.kirim || []).map(normalizeKirimRow);
-chiqimData = (d.chiqim || []).map(normalizeChiqimRow);
+var kirimData  = [];
+var chiqimData = [];
 var lastBc     = 10001;
 var selIds     = new Set();
 var isOperator = false;
@@ -836,47 +785,26 @@ function updateSaveBtn() {
   }
 }
 
-// --- САҚЛАШ ВА ЖАДВАЛНИ ЧИҚАРИШ ФУНКЦИЯЛАРИ ---
-
 function saveAllChiqim() {
   var pending = chiqimData.filter(function(r) { return r.pending; });
   if (!pending.length) { toast('Saqlanadigan ma\'lumot yoq'); return; }
-  
   var btn = document.getElementById('saveAllBtn');
-  if (btn.disabled) return; // Такрорий босишдан ҳимоя
-
   btn.textContent = 'Yuborilmoqda...';
   btn.disabled = true;
-
-  // Гуглга юбориладиган маълумотлар пакети
   var rows = pending.map(function(r) {
-    return {
-      sana: r.sana, 
-      bc: r.bc, 
-      trim: r.trim, 
-      client: r.client,
-      product: r.product, 
-      color: r.color, 
-      buyer: r.buyer, 
-      qty: r.qty, 
-      kg: r.kg || 0, // КГ маълумоти энди тушиб қолмайди
-      sizes: r.sizes || {}
-    };
+    return {sana:r.sana, bc:r.bc, trim:r.trim, client:r.client,
+      product:r.product, color:r.color, buyer:r.buyer, qty:r.qty, sizes:r.sizes || {}};
   });
-
   jsonp(OMBOR_URL, {action:'addChiqimBatch', rows:JSON.stringify(rows)}, function(err, d) {
     btn.disabled = false;
-    btn.textContent = 'Saqlash';
-    
     if (!err && d && d.status === 'ok') {
-      // Юборилганларни рўйхатдан ўчириш (экран тозаланади)
-      chiqimData = chiqimData.filter(function(r) { return !r.pending; });
-      
+      pending.forEach(function(r) { r.holat = 'Yozildi'; r.pending = false; });
       renderChiqim();
       updateSaveBtn();
-      toast(pending.length + ' ta chiqim saqlandi!');
+      toast(pending.length + ' ta chiqim Google Sheets\'ga yozildi!');
       playBeep('ok');
     } else {
+      // Bitta-bitta yuborish
       toast('Xato — alohida yuborilmoqda...');
       saveChiqimOne(pending, btn);
     }
@@ -887,29 +815,15 @@ function saveChiqimOne(pending, btn) {
   var total = pending.length, done = 0, errors = 0;
   pending.forEach(function(rec) {
     jsonp(OMBOR_URL, {
-      action:'addChiqim', 
-      sana:rec.sana, 
-      bc:rec.bc, 
-      trim:rec.trim,
-      client:rec.client, 
-      product:rec.product, 
-      color:rec.color,
-      buyer:rec.buyer, 
-      qty:rec.qty, 
-      kg:rec.kg || 0,
-      sizes:JSON.stringify(rec.sizes || {})
+      action:'addChiqim', sana:rec.sana, bc:rec.bc, trim:rec.trim,
+      client:rec.client, product:rec.product, color:rec.color,
+      buyer:rec.buyer, qty:rec.qty, sizes:JSON.stringify(rec.sizes || {})
     }, function(err, d) {
       done++;
-      if (!err && d && d.status === 'ok') { 
-        rec.pending = false; 
-        // Юборилганни ўчириш
-        chiqimData = chiqimData.filter(function(x) { return x.bc !== rec.bc || x.pending; });
-      } else { 
-        errors++; 
-      }
+      if (!err && d && d.status === 'ok') { rec.holat = 'Yozildi'; rec.pending = false; }
+      else { rec.holat = 'Xato'; errors++; }
       renderChiqim();
       if (done === total) {
-        btn.disabled = false;
         updateSaveBtn();
         toast(errors === 0 ? (total + ' ta yozildi!') : (errors + ' ta yozilmadi'));
         playBeep(errors === 0 ? 'ok' : 'err');
@@ -921,26 +835,25 @@ function saveChiqimOne(pending, btn) {
 function renderChiqim() {
   var tb = document.getElementById('ch-tbody');
   if (!chiqimData.length) {
-    tb.innerHTML = '<tr><td colspan="11" class="empty">Chiqim yoq</td></tr>';
+    tb.innerHTML = '<tr><td colspan="10" class="empty">Chiqim yoq</td></tr>';
     return;
   }
   var html = '';
   chiqimData.forEach(function(r, i) {
     var key = String(r.id || r.bc);
     var delBtn = isOperator
-      ? '<button onclick="deleteChiqim(\'' + key + '\')" style="padding:3px 8px; font-size:11px; border:1px solid #e94560; border-radius:4px; color:#e94560; background:#fff; cursor:pointer;">Del</button>'
+      ? '<button onclick="deleteChiqim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">Del</button>'
       : '';
-    
     html += '<tr>'
       + '<td style="color:#bbb">' + (i+1) + '</td>'
       + '<td><span class="bc-badge">' + r.bc + '</span></td>'
+      + '<td style="font-family:monospace;font-size:11px">' + r.trim + '</td>'
+      + '<td>' + r.sana + '</td>'
+      + '<td>' + r.buyer + '</td>'
       + '<td>' + r.product + '</td>'
       + '<td>' + r.color + '</td>'
       + '<td><b>' + r.qty + '</b></td>'
-      + '<td>' + (r.kg || 0) + '</td>' // КГ устуни энди сайтда кўринади
-      + '<td>' + r.buyer + '</td>'
-      + '<td>' + r.sana + '</td>'
-      + '<td>' + (r.pending ? '<span style="color:#f39c12">Kutilmoqda...</span>' : '<span style="color:#27ae60">Yozildi</span>') + '</td>'
+      + '<td>' + (r.holat || '') + '</td>'
       + '<td>' + delBtn + '</td>'
       + '</tr>';
   });
@@ -1003,86 +916,18 @@ function doPrint(rows) {
   if (!rows || !rows.length || !rows[0]) return;
   var pa = document.getElementById('print-area');
   pa.innerHTML = '';
-  
-  // 100x60mm ўлчам учун янгиланган стиллар
-  var style = document.createElement('style');
-  style.innerHTML = `
-    .sticker {
-      width: 100mm;
-      height: 60mm;
-      padding: 3mm 5mm;
-      border: 0.1mm solid #eee;
-      margin-bottom: 5px;
-      display: flex;
-      overflow: hidden;
-      page-break-inside: avoid;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #fff;
-      box-sizing: border-box;
-    }
-    .st-left { 
-      width: 65%; 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: space-between;
-    }
-    .st-right { 
-      width: 35%; 
-      text-align: center; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center;
-      border-left: 1px dashed #ccc;
-    }
-    .st-header { 
-      font-size: 14pt; 
-      font-weight: bold; 
-      text-transform: uppercase; 
-      border-bottom: 2px solid #000; 
-      margin-bottom: 3mm;
-      color: #000;
-    }
-    .st-table { width: 100%; border-collapse: collapse; }
-    .st-table td { padding: 1mm 0; line-height: 1.2; }
-    .lbl { color: #444; width: 30%; font-size: 10pt; }
-    .val { font-size: 11pt; font-weight: 600; color: #000; }
-    .bold { font-weight: 800; font-size: 12pt; }
-    .size-box { 
-      background: #f0f0f0; 
-      padding: 2mm; 
-      border-radius: 4px; 
-      font-size: 11pt; 
-      font-weight: bold;
-      margin-top: 2mm;
-    }
-  `;
-  document.head.appendChild(style);
-
   var tmp = document.createElement('div');
   tmp.style.cssText = 'position:fixed;left:-9999px;top:0;width:200px';
   document.body.appendChild(tmp);
-  
   var srcs = [], done = 0;
   rows.forEach(function(r, i) {
     if (!r) { done++; return; }
     var h = document.createElement('div');
     tmp.appendChild(h);
-    
-    // Уникал QR код яратиш
-    var uniqueQR = r.bc + "-" + Date.now(); 
-    
     try {
-      new QRCode(h, {
-        text: uniqueQR, 
-        width: 180, // 100x60 учун QR кодни каттароқ қилдик
-        height: 180,
-        colorDark: '#000', 
-        colorLight: '#fff', 
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    } catch(e) { console.error(e); }
-
+      new QRCode(h, {text:r.bc, width:130, height:130,
+        colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.M});
+    } catch(e) {}
     setTimeout(function() {
       var c = h.querySelector('canvas');
       srcs[i] = c ? c.toDataURL('image/png') : '';
@@ -1098,30 +943,30 @@ function doPrint(rows) {
               if (r2.sizes[s] > 0) szArr.push(s + '(' + r2.sizes[s] + ')');
             });
           }
-          
           html += '<div class="sticker">'
             + '<div class="st-left">'
-            + '<div class="st-header">EGIN TEXTILE GROUP</div>'
+            + '<div class="st-header">TMO Trikotaj</div>'
             + '<table class="st-table">'
-            + '<tr><td class="lbl">Sana:</td><td class="val">' + r2.sana + '</td></tr>'
-            + '<tr><td class="lbl">Mijoz:</td><td class="val">' + r2.client + '</td></tr>'
-            + '<tr><td class="lbl">Nomi:</td><td class="val bold">' + r2.product + '</td></tr>'
-            + '<tr><td class="lbl">Rangi:</td><td class="val">' + r2.color + '</td></tr>'
-            + '<tr><td class="lbl">Vazni:</td><td class="val">' + (r2.kg || '0') + ' kg</td></tr>'
-            + '<tr><td class="lbl">Soni:</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
-            + '</table>'
-            + (szArr.length ? '<div class="size-box">O\'lchamlar: ' + szArr.join(' | ') + '</div>' : '')
-            + '</div>'
+            + '<tr><td class="lbl">ID Barkod</td><td class="val bold">' + r2.bc + '</td></tr>'
+            + '<tr><td class="lbl">Trimkarta</td><td class="val">' + r2.trim + '</td></tr>'
+            + '<tr><td class="lbl">Sana</td><td class="val">' + r2.sana + '</td></tr>'
+            + '<tr><td class="lbl">Klient</td><td class="val">' + r2.client + '</td></tr>'
+            + '<tr><td class="lbl">Mahsulot</td><td class="val">' + r2.product + '</td></tr>'
+            + '<tr><td class="lbl">Rangi</td><td class="val">' + r2.color + '</td></tr>'
+            + (szArr.length ? '<tr><td class="lbl">Olcham</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
+            + '<tr><td class="lbl">Jami</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
+            + '<tr><td class="lbl">Kg</td><td class="val">' + r2.kg + '</td></tr>'
+            + '</table></div>'
             + '<div class="st-right">'
-            + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:40mm;height:40mm;margin-bottom:5px">' : '<b>' + r2.bc + '</b>')
-            + '<div style="font-size:12pt; font-weight:bold; letter-spacing:1px">' + r2.bc + '</div>'
-            + '<div style="font-size:8pt; color:#666; margin-top:2px">ID: ' + Date.now().toString().slice(-6) + '</div>'
+            + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:28mm;height:28mm">' : '<b>' + r2.bc + '</b>')
+            + '<div class="st-bc">' + r2.bc + '</div>'
+            + '<div class="st-qr-lbl">QR Kod</div>'
             + '</div></div>';
         });
         pa.innerHTML = html;
-        setTimeout(function() { window.print(); }, 400);
+        setTimeout(function() { window.print(); }, 200);
       }
-    }, 600);
+    }, 400);
   });
 }
 
@@ -1136,24 +981,6 @@ function toast(msg) {
 // Start
 updateSizeGrid();
 loadFromSheets();
-</script>
-<script>
-
-// Mouse wheel scroll o'chirish
-document.addEventListener("wheel", function(event) {
-  if (document.activeElement.type === "number") {
-    document.activeElement.blur();
-  }
-});
-
-// Saqlashdan keyin tozalash funksiyasi (asl funksiyani ichiga integratsiya qilish)
-function clearChiqimTable() {
-  chiqimData = [];
-  if (typeof renderChiqim === 'function') renderChiqim();
-  var btn = document.getElementById('saveAllBtn');
-  if (btn) btn.style.display = 'none';
-}
-
 </script>
 </body>
 </html>
