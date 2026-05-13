@@ -140,14 +140,14 @@ input[type=number]{-moz-appearance:textfield}
   <div class="card">
     <div class="card-title">Trimkarta orqali yuklash</div>
     <div class="trim-search">
-      <input id="trim-inp" placeholder="Trimkarta: B26-023"
+      <input id="trim-inp" placeholder="Trimkarta: B26/023"
         oninput="this.value=this.value.toUpperCase()"
         onkeydown="if(event.key==='Enter') fetchOrder()">
       <button onclick="fetchOrder()">Yuklash</button>
     </div>
     <div id="order-results" style="display:none"></div>
     <div class="form-grid">
-      <div class="form-group"><label>Trimkarta</label><input id="k-trim" placeholder="B26-023" style="font-family:monospace;font-weight:700"></div>
+      <div class="form-group"><label>Trimkarta</label><input id="k-trim" placeholder="B26/023" style="font-family:monospace;font-weight:700"></div>
       <div class="form-group"><label>Klient</label><input id="k-client" placeholder="Klient ismi"></div>
       <div class="form-group"><label>Mahsulot</label><input id="k-product" placeholder="TRIKO"></div>
       <div class="form-group"><label>Rangi</label><input id="k-color" placeholder="Qora"></div>
@@ -185,7 +185,7 @@ input[type=number]{-moz-appearance:textfield}
       <div class="sizes-grid" id="sizes-grid"></div>
     </div>
     <div class="btn-row" id="kirim-btns" style="display:none">
-      <button class="btn btn-primary" id="addKirimBtn" onclick="addKirim()">+ Qo'shish va QR yaratish</button>
+      <button class="btn btn-primary" id="addKirimBtn" onclick="addKirim()">+ Qoshish va QR yaratish</button>
       <button class="btn btn-outline" onclick="clearKirimForm()">Tozalash</button>
     </div>
     <div id="kirim-lock-msg" style="margin-top:12px;font-size:12px;color:#e94560;padding:8px 12px;background:#ffeaea;border-radius:6px">
@@ -287,17 +287,18 @@ document.addEventListener('wheel', function(e){
   }
 }, {passive:false});
 
-var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbzvHuyVicv2IZQu1T5eOHA4oWfNdzhlukJnzYqj0q_TLKjm6veZc0rLxVyhL8EJ38RuAw/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxwXIjA_AZQmKz7scsItQN4U3u54lqozmFdISM77dcw19-rRM9Mh1-5Aainn-mVDmQYKg/exec';
+var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbz-RBxhOuPCtL9bKCaBYFBczvLR8k6Ew4Pwllt0h9b4Mu2bL6Xi78wO-32hIUTCOrGp/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbzI7n5A5qzkDXtCdmrtFbMLZ9g1ID30FIrIeyC0CkuXhHzGhF07As3I30CBUDPNm01eEA/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
-var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','3XL','4XL','5XL'];
+var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
 var SIZE_TYPE = 'num'; // 'num' yoki 'char'
 var ALL_SIZES = ALL_SIZES_NUM;
 
 var kirimData  = [];
 var chiqimData = [];
 var lastBc     = 10001;
+var dataReady  = false;  // Sheets dan data yuklangandan keyin true
 var selIds     = new Set();
 var kirimSelIds = new Set();
 var isOperator = false;
@@ -469,8 +470,9 @@ function loadFromSheets() {
     chiqimData = d.chiqim || [];
     if (kirimData.length) {
       var mx = Math.max.apply(null, kirimData.map(function(r) { return parseInt(r.bc) || 0; }));
-      if (mx > lastBc) lastBc = mx;
+      if (mx >= lastBc) lastBc = mx;
     }
+    dataReady = true;
     renderKirim();
     renderChiqim();
   });
@@ -571,6 +573,7 @@ function updateSizeGrid() {
 function addKirim() {
   var btn = document.getElementById('addKirimBtn');
   if (btn && btn.disabled) return;
+  if (!dataReady) { toast('Iltimos, Sheets dan ma\'lumot yuklanishini kuting...'); return; }
   if (btn) { btn.disabled = true; setTimeout(function(){ btn.disabled = false; }, 3000); }
   var client  = document.getElementById('k-client').value.trim();
   var product = document.getElementById('k-product').value.trim();
@@ -617,8 +620,14 @@ function addKirim() {
     client:row.client, product:row.product, color:row.color,
     sizes:JSON.stringify(row.sizes), jami:row.jami, kg:row.kg
   }, function(err, d) {
-    if (!err && d && d.status === 'ok') toast('Sheets — Kirim yozildi');
-    else toast('Sheets ga yozilmadi');
+    if (!err && d && d.status === 'ok') {
+      // Sheets da yozilgan bc ni tekshirib lastBc ni sinxronlash
+      if (d.bc && parseInt(d.bc) > lastBc) lastBc = parseInt(d.bc);
+      toast('Sheets — Kirim yozildi');
+    } else {
+      toast('Sheets ga yozilmadi');
+    }
+    if (btn) btn.disabled = false;
   });
 }
 
@@ -667,10 +676,7 @@ function renderKirim() {
   rows.forEach(function(r, i) {
     var key = String(r.id || r.bc);
     var sel = selIds.has(key);
-    var delBtn = '';
-    if (isOperator) {
-      delBtn = '<button onclick="deleteKirim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">Del</button>';
-    }
+    var delBtn = '<button onclick="deleteKirim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">Del</button>';
     var kirimChecked = kirimSelIds && kirimSelIds.has(key);
     html += '<tr style="' + (sel ? 'background:#e8f0fe' : '') + '">'
       + '<td><input type="checkbox" ' + (sel ? 'checked' : '') + ' onchange="toggleSel(\'' + key + '\',this)"></td>'
@@ -997,22 +1003,22 @@ function doPrint(rows) {
           }
           html += '<div class="sticker">'
             + '<div class="st-left">'
-            + '<div class="st-header">EGIN GROUP</div>'
+            + '<div class="st-header">TMO Trikotaj</div>'
             + '<table class="st-table">'
-            + '<tr><td class="lbl">ID Баркод</td><td class="val bold">' + r2.bc + '</td></tr>'
-            + '<tr><td class="lbl">Номер заказа</td><td class="val">' + r2.trim + '</td></tr>'
-            + '<tr><td class="lbl">Дата</td><td class="val">' + r2.sana + '</td></tr>'
-            + '<tr><td class="lbl">Клиент</td><td class="val">' + r2.client + '</td></tr>'
-            + '<tr><td class="lbl">Наименования товара</td><td class="val">' + r2.product + '</td></tr>'
-            + '<tr><td class="lbl">Цвет</td><td class="val">' + r2.color + '</td></tr>'
-            + (szArr.length ? '<tr><td class="lbl">Размер</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
-            + '<tr><td class="lbl">Итого</td><td class="val bold">' + r2.jami + ' шт</td></tr>'
-            + '<tr><td class="lbl">Кг</td><td class="val">' + r2.kg + '</td></tr>'
+            + '<tr><td class="lbl">ID Barkod</td><td class="val bold">' + r2.bc + '</td></tr>'
+            + '<tr><td class="lbl">Trimkarta</td><td class="val">' + r2.trim + '</td></tr>'
+            + '<tr><td class="lbl">Sana</td><td class="val">' + r2.sana + '</td></tr>'
+            + '<tr><td class="lbl">Klient</td><td class="val">' + r2.client + '</td></tr>'
+            + '<tr><td class="lbl">Mahsulot</td><td class="val">' + r2.product + '</td></tr>'
+            + '<tr><td class="lbl">Rangi</td><td class="val">' + r2.color + '</td></tr>'
+            + (szArr.length ? '<tr><td class="lbl">Olcham</td><td class="val" style="font-size:10pt;font-weight:600">' + szArr.join(' ') + '</td></tr>' : '')
+            + '<tr><td class="lbl">Jami</td><td class="val bold">' + r2.jami + ' dona</td></tr>'
+            + '<tr><td class="lbl">Kg</td><td class="val">' + r2.kg + '</td></tr>'
             + '</table></div>'
             + '<div class="st-right">'
             + (srcs[j] ? '<img src="' + srcs[j] + '" style="width:28mm;height:28mm">' : '<b>' + r2.bc + '</b>')
             + '<div class="st-bc">' + r2.bc + '</div>'
-            + '<div class="st-qr-lbl">QR Код</div>'
+            + '<div class="st-qr-lbl">QR Kod</div>'
             + '</div></div>';
         });
         pa.innerHTML = html;
