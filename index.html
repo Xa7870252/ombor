@@ -276,8 +276,8 @@ tr:hover td{background:#fafafa}
 <div id="toast"></div>
 
 <script>
-var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbwjGGiPs0XNkW9Y0x6By_CXBCDfRFg-qbR0Ho9e7h7asqpa5tkDObksKLbusMurGo_fng/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxBKXEm5jgy5fA_a8ubPTdDr7rlNDfnQImISzuJ_4qY41uGdA-GWRiZrV7mUSHvMaT4ag/exec';
+var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbw0pEzPXfz3qoIc_wQy_BOnUp-pq5BZznCKizNxwXaNS-8OXZBfjBqC4mXoxVyHe92Xug/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbwdI5GUXf0jdmrbQoFTGWjP3DQ5lwjthy0nGHWGFH0ei-U3RMr-Ku7iVzTVt3jdtPt5NQ/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
@@ -804,9 +804,12 @@ function updateSaveBtn() {
   var cnt = document.getElementById('unsaved-count');
   if (pending.length > 0) {
     btn.style.display = 'inline-block';
+    btn.disabled = false;
+    btn.textContent = 'Barchasini saqlash (' + pending.length + ' ta)';
     cnt.textContent = pending.length;
   } else {
     btn.style.display = 'none';
+    btn.disabled = false;
   }
 }
 
@@ -826,6 +829,8 @@ function saveAllChiqim() {
     if (!err && d && d.status === 'ok') {
       pending.forEach(function(r) { r.holat = 'Yozildi'; r.pending = false; });
       renderChiqim();
+      btn.disabled = false;
+      btn.textContent = 'Barchasini saqlash';
       updateSaveBtn();
       toast(pending.length + ' ta chiqim Google Sheets\'ga yozildi!');
       playBeep('ok');
