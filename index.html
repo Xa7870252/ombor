@@ -183,6 +183,11 @@ input[type=number]{-moz-appearance:textfield}
         </span>
       </div>
       <div class="sizes-grid" id="sizes-grid"></div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:10px">
+        <label style="font-size:13px;font-weight:600;white-space:nowrap;color:#444">ЧЗ raqami:</label>
+        <input type="text" id="k-cz" placeholder="Chestny Znak raqami (ixtiyoriy)"
+          style="flex:1;padding:8px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:monospace">
+      </div>
     </div>
     <div class="btn-row" id="kirim-btns" style="display:none">
       <button class="btn btn-primary" id="addKirimBtn" onclick="addKirim()">+ Qoshish va QR yaratish</button>
@@ -210,7 +215,7 @@ input[type=number]{-moz-appearance:textfield}
           <th style="width:32px"><input type="checkbox" id="cbAll" onchange="toggleAll(this)"></th>
           <th style="width:32px"><input type="checkbox" id="cbKirimAll" onchange="toggleKirimCheckbox(this)" title="Nakладной uchun tanlash"></th>
           <th>#</th><th>Barkod</th><th>Trimkarta</th><th>Sana</th>
-          <th>Klient</th><th>Mahsulot</th><th>Rangi</th><th>Jami</th><th>Kg</th><th></th>
+          <th>Klient</th><th>Mahsulot</th><th>Rangi</th><th>Jami</th><th>Kg</th><th>ЧЗ</th><th></th>
         </tr></thead>
         <tbody id="kirim-tbody"></tbody>
       </table>
@@ -288,7 +293,7 @@ document.addEventListener('wheel', function(e){
 }, {passive:false});
 
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbz-RBxhOuPCtL9bKCaBYFBczvLR8k6Ew4Pwllt0h9b4Mu2bL6Xi78wO-32hIUTCOrGp/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbzI7n5A5qzkDXtCdmrtFbMLZ9g1ID30FIrIeyC0CkuXhHzGhF07As3I30CBUDPNm01eEA/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbygk9BpnVzj1C5bYbb270r5thlKlbZJivfCkRMI6cGlvq3UcMUSNCys-Vf6ZJoNXEv3/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
@@ -578,6 +583,7 @@ function addKirim() {
   var client  = document.getElementById('k-client').value.trim();
   var product = document.getElementById('k-product').value.trim();
   if (!client || !product) { if (btn) btn.disabled = false; toast('Klient va Mahsulot kiriting!'); return; }
+  var czEl = document.getElementById('k-cz');
   var sizes = {}, jami = 0;
   getActiveSizes().forEach(function(s) {
     var el = document.getElementById('s' + s);
@@ -593,6 +599,7 @@ function addKirim() {
     color:document.getElementById('k-color').value.trim(),
     trim:document.getElementById('k-trim').value.trim(),
     kg:document.getElementById('k-kg').value.trim(),
+    cz: czEl ? czEl.value.trim() : '',
     sizes:sizes, jami:jami
   };
   // O'lchamlarni saqlash
@@ -618,7 +625,7 @@ function addKirim() {
   jsonp(OMBOR_URL, {
     action:'addKirim', sana:row.sana, bc:row.bc, trim:row.trim,
     client:row.client, product:row.product, color:row.color,
-    sizes:JSON.stringify(row.sizes), jami:row.jami, kg:row.kg
+    sizes:JSON.stringify(row.sizes), jami:row.jami, kg:row.kg, cz:row.cz
   }, function(err, d) {
     if (!err && d && d.status === 'ok') {
       // Sheets da yozilgan bc ni tekshirib lastBc ni sinxronlash
@@ -690,6 +697,7 @@ function renderKirim() {
       + '<td>' + r.color + '</td>'
       + '<td><b>' + r.jami + '</b></td>'
       + '<td>' + r.kg + '</td>'
+      + '<td style="font-family:monospace;font-size:11px;color:#555;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (r.cz||'') + '">' + (r.cz||'') + '</td>'
       + '<td style="display:flex;gap:4px">'
       + '<button onclick="printOne(\'' + key + '\')" style="padding:3px 9px;font-size:11px;border:1px solid #1a1a2e;border-radius:4px;cursor:pointer;background:#fff">QR</button>'
       + delBtn
@@ -1027,6 +1035,7 @@ function doPrint(rows) {
     }, 400);
   });
 }
+
 
 // Kirim Nakladnoy (HTML print)
 function buildKirimNakladnoy(rows) {
