@@ -91,13 +91,13 @@ tr:hover td{background:#fafafa}
   .sticker:last-child{page-break-after:auto}
   .st-left{flex:1;display:flex;flex-direction:column;justify-content:center}
   .st-table{width:100%;border-collapse:collapse;font-size:8pt}
-  .st-table td{padding:0.8mm 1.5mm;border:0.3pt solid #bbb;vertical-align:middle;line-height:1.3}
-  .st-table .lbl{font-weight:700;color:#333;white-space:nowrap;width:28%;background:#f5f5f5}
-  .st-table .val{color:#000}
-  .st-table .val.bold{font-weight:700;font-size:9pt}
-  .st-header{text-align:center;font-size:9pt;font-weight:800;color:#1a1a2e;margin-bottom:1mm}
-  .st-right{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5mm;min-width:30mm}
-  .st-right img{width:28mm!important;height:28mm!important;display:block}
+  .st-table td{padding:0.6mm 1.2mm;border:0.3pt solid #bbb;vertical-align:middle;line-height:1.2}
+  .st-table .lbl{font-weight:700;color:#333;white-space:nowrap;width:28%;background:#f5f5f5;font-size:7.5pt}
+  .st-table .val{color:#000;word-break:break-word;font-size:7.5pt}
+  .st-table .val.bold{font-weight:700;font-size:8.5pt}
+  .st-header{text-align:center;font-size:8.5pt;font-weight:800;color:#1a1a2e;margin-bottom:0.5mm}
+  .st-right{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;min-width:28mm;max-width:32mm}
+  .st-right img{width:26mm!important;height:26mm!important;display:block}
   .st-bc{font-size:7.5pt;font-weight:700;font-family:monospace;letter-spacing:1.5pt;color:#1a1a2e}
   .st-qr-lbl{font-size:6.5pt;color:#888}
 }
@@ -181,7 +181,7 @@ tr:hover td{background:#fafafa}
       <div class="sizes-grid" id="sizes-grid"></div>
     </div>
     <div class="btn-row" id="kirim-btns" style="display:none">
-      <button class="btn btn-primary" onclick="addKirim()">+ Qoshish va QR yaratish</button>
+      <button class="btn btn-primary" id="addKirimBtn" onclick="addKirim()">+ Qoshish va QR yaratish</button>
       <button class="btn btn-outline" onclick="clearKirimForm()">Tozalash</button>
     </div>
     <div id="kirim-lock-msg" style="margin-top:12px;font-size:12px;color:#e94560;padding:8px 12px;background:#ffeaea;border-radius:6px">
@@ -192,6 +192,7 @@ tr:hover td{background:#fafafa}
     <div class="card-title">
       <span>Kirim jadvali</span>
       <button class="btn btn-red" onclick="printSelected()" style="font-size:12px;padding:6px 14px">Chop et</button>
+      <button class="btn btn-green" onclick="printKirimNakladnoy()" style="font-size:12px;padding:6px 14px">Nakладной</button>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
       <input id="k-search" placeholder="Qidirish..." oninput="renderKirim()"
@@ -203,6 +204,7 @@ tr:hover td{background:#fafafa}
       <table>
         <thead><tr>
           <th style="width:32px"><input type="checkbox" id="cbAll" onchange="toggleAll(this)"></th>
+          <th style="width:32px"><input type="checkbox" id="cbKirimAll" onchange="toggleKirimCheckbox(this)" title="Nakладной uchun tanlash"></th>
           <th>#</th><th>Barkod</th><th>Trimkarta</th><th>Sana</th>
           <th>Klient</th><th>Mahsulot</th><th>Rangi</th><th>Jami</th><th>Kg</th><th></th>
         </tr></thead>
@@ -286,6 +288,7 @@ var kirimData  = [];
 var chiqimData = [];
 var lastBc     = 10001;
 var selIds     = new Set();
+var kirimSelIds = new Set();
 var isOperator = false;
 var audioCtx   = null;
 var scanTimer  = null;
@@ -555,9 +558,12 @@ function updateSizeGrid() {
 
 // Kirim
 function addKirim() {
+  var btn = document.getElementById('addKirimBtn');
+  if (btn && btn.disabled) return;
+  if (btn) { btn.disabled = true; setTimeout(function(){ btn.disabled = false; }, 3000); }
   var client  = document.getElementById('k-client').value.trim();
   var product = document.getElementById('k-product').value.trim();
-  if (!client || !product) { toast('Klient va Mahsulot kiriting!'); return; }
+  if (!client || !product) { if (btn) btn.disabled = false; toast('Klient va Mahsulot kiriting!'); return; }
   var sizes = {}, jami = 0;
   getActiveSizes().forEach(function(s) {
     var el = document.getElementById('s' + s);
@@ -654,8 +660,10 @@ function renderKirim() {
     if (isOperator) {
       delBtn = '<button onclick="deleteKirim(\'' + key + '\')" style="padding:3px 8px;font-size:11px;border:1px solid #e94560;border-radius:4px;cursor:pointer;background:#fff;color:#e94560">Del</button>';
     }
+    var kirimChecked = kirimSelIds && kirimSelIds.has(key);
     html += '<tr style="' + (sel ? 'background:#e8f0fe' : '') + '">'
       + '<td><input type="checkbox" ' + (sel ? 'checked' : '') + ' onchange="toggleSel(\'' + key + '\',this)"></td>'
+      + '<td><input type="checkbox" ' + (kirimChecked ? 'checked' : '') + ' onchange="toggleKirimSel(\'' + key + '\',this)" title="Nakl uchun"></td>'
       + '<td style="color:#bbb">' + (i+1) + '</td>'
       + '<td><span class="bc-badge">' + r.bc + '</span></td>'
       + '<td style="font-family:monospace;font-size:11px">' + r.trim + '</td>'
@@ -688,6 +696,18 @@ function toggleAll(cb) {
 }
 function selAll() { kirimData.forEach(function(r) { selIds.add(String(r.id || r.bc)); }); renderKirim(); }
 function deselAll() { selIds.clear(); renderKirim(); }
+function toggleKirimSel(id, cb) {
+  if (cb.checked) kirimSelIds.add(id); else kirimSelIds.delete(id);
+}
+function toggleKirimCheckbox(cb) {
+  kirimData.forEach(function(r){ var k=String(r.id||r.bc); if(cb.checked) kirimSelIds.add(k); else kirimSelIds.delete(k); });
+  renderKirim();
+}
+function printKirimNakladnoy() {
+  var selected = kirimData.filter(function(r){ return kirimSelIds.has(String(r.id||r.bc)); });
+  if (!selected.length) { toast("Nakladnoy uchun qatorlarni belgilang!"); return; }
+  buildKirimNakladnoy(selected);
+}
 function printSelected() {
   if (!selIds.size) { toast('Avval qatorlarni belgilang!'); return; }
   doPrint(kirimData.filter(function(r) { return selIds.has(String(r.id || r.bc)); }));
@@ -708,17 +728,22 @@ function deleteKirim(id) {
 // Chiqim skaner
 function focusScan() { document.getElementById('scan-inp').focus(); }
 
+var _scanEnterPressed = false;
+document.getElementById('scan-inp').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    _scanEnterPressed = true;
+    clearTimeout(scanTimer);
+    var val = this.value;
+    if (val.trim()) processScan(val);
+    setTimeout(function(){ _scanEnterPressed = false; }, 100);
+  }
+});
 document.getElementById('scan-inp').addEventListener('input', function() {
+  if (_scanEnterPressed) return;
   clearTimeout(scanTimer);
   var val = this.value;
   if (!val.trim()) return;
-  scanTimer = setTimeout(function() { processScan(val); }, 300);
-});
-document.getElementById('scan-inp').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    clearTimeout(scanTimer);
-    processScan(this.value);
-  }
+  scanTimer = setTimeout(function() { processScan(val); }, 350);
 });
 
 function processScan(val) {
@@ -789,6 +814,7 @@ function saveAllChiqim() {
   var pending = chiqimData.filter(function(r) { return r.pending; });
   if (!pending.length) { toast('Saqlanadigan ma\'lumot yoq'); return; }
   var btn = document.getElementById('saveAllBtn');
+  if (btn.disabled) return;
   btn.textContent = 'Yuborilmoqda...';
   btn.disabled = true;
   var rows = pending.map(function(r) {
@@ -805,6 +831,8 @@ function saveAllChiqim() {
       playBeep('ok');
     } else {
       // Bitta-bitta yuborish
+      btn.disabled = false;
+      btn.textContent = 'Barchasini saqlash';
       toast('Xato — alohida yuborilmoqda...');
       saveChiqimOne(pending, btn);
     }
@@ -939,8 +967,16 @@ function doPrint(rows) {
           if (!r2) return;
           var szArr = [];
           if (r2.sizes) {
-            ALL_SIZES.forEach(function(s) {
-              if (r2.sizes[s] > 0) szArr.push(s + '(' + r2.sizes[s] + ')');
+            // ALL_SIZES o'rniga sizes kalitlarini tartibda olish
+            var sizeKeys = Object.keys(r2.sizes).filter(function(s){ return r2.sizes[s] > 0; });
+            // Raqamli o'lchamlarni avval tartiblash
+            sizeKeys.sort(function(a,b){
+              var na = Number(a), nb = Number(b);
+              if (!isNaN(na) && !isNaN(nb)) return na - nb;
+              return String(a).localeCompare(String(b));
+            });
+            sizeKeys.forEach(function(s) {
+              szArr.push(s + '(' + r2.sizes[s] + ')');
             });
           }
           html += '<div class="sticker">'
@@ -968,6 +1004,64 @@ function doPrint(rows) {
       }
     }, 400);
   });
+}
+
+// Kirim Nakladnoy (HTML print)
+function buildKirimNakladnoy(rows) {
+  var today = new Date().toLocaleDateString('uz-UZ', {day:'2-digit',month:'2-digit',year:'numeric'});
+  var client = rows[0] ? rows[0].client : '';
+  // Barcha size kalitlarini yig'ish
+  var sizeSet = {};
+  rows.forEach(function(r){ if(r.sizes) Object.keys(r.sizes).forEach(function(s){ if(r.sizes[s]>0) sizeSet[s]=1; }); });
+  var sizes = Object.keys(sizeSet).sort(function(a,b){
+    var na=Number(a),nb=Number(b);
+    if(!isNaN(na)&&!isNaN(nb)) return na-nb;
+    return String(a).localeCompare(String(b));
+  });
+  var totalJami=0;
+  rows.forEach(function(r){ totalJami += parseInt(r.jami)||0; });
+  var totalSizes = {};
+  sizes.forEach(function(s){ totalSizes[s]=0; });
+  rows.forEach(function(r){ sizes.forEach(function(s){ totalSizes[s]+=(r.sizes&&r.sizes[s])||0; }); });
+
+  var thCols = ['#','Trimkarta','Mahsulot','Rangi'].concat(sizes).concat(['Jami','Kg']);
+  var thHtml = thCols.map(function(h){ return '<th style="background:#FF6600;color:#000;padding:6px 8px;border:1px solid #ccc;font-size:11px">'+h+'</th>'; }).join('');
+  var bodyHtml = '';
+  rows.forEach(function(r,i){
+    var szCells = sizes.map(function(s){ return '<td style="text-align:center;border:1px solid #eee;padding:4px">'+(r.sizes&&r.sizes[s]>0?r.sizes[s]:'')+' </td>'; }).join('');
+    bodyHtml += '<tr>'
+      + '<td style="text-align:center;border:1px solid #eee;padding:4px">'+(i+1)+'</td>'
+      + '<td style="font-family:monospace;border:1px solid #eee;padding:4px">'+r.trim+'</td>'
+      + '<td style="border:1px solid #eee;padding:4px"><b>'+r.product+'</b></td>'
+      + '<td style="border:1px solid #eee;padding:4px">'+r.color+'</td>'
+      + szCells
+      + '<td style="text-align:center;font-weight:700;border:1px solid #eee;padding:4px">'+r.jami+'</td>'
+      + '<td style="text-align:center;border:1px solid #eee;padding:4px">'+r.kg+'</td>'
+      + '</tr>';
+  });
+  var totCells = sizes.map(function(s){ return '<td style="text-align:center;background:#FF6600;font-weight:700;border:1px solid #ccc;padding:4px">'+totalSizes[s]+'</td>'; }).join('');
+
+  var html = '<div style="font-family:Arial,sans-serif;padding:12mm;font-size:12px">'
+    + '<h2 style="text-align:center;background:#FF6600;padding:10px;margin-bottom:4px">EGIN TEXTILE GROUP — NAKLADNOY (KIRIM)</h2>'
+    + '<div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:13px;font-weight:600">'
+    + '<span>Sana: '+today+'</span><span>Klient: '+client+'</span></div>'
+    + '<table style="width:100%;border-collapse:collapse">'
+    + '<thead><tr>'+thHtml+'</tr></thead><tbody>'+bodyHtml+'</tbody>'
+    + '<tfoot><tr>'
+    + '<td colspan="4" style="font-weight:700;background:#FF6600;border:1px solid #ccc;padding:5px;text-align:center">JAMI</td>'
+    + totCells
+    + '<td style="text-align:center;font-weight:700;background:#FF6600;border:1px solid #ccc;padding:5px">'+totalJami+'</td>'
+    + '<td style="background:#FF6600;border:1px solid #ccc"></td>'
+    + '</tr></tfoot></table>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px">'
+    + ['Rahbar','Hisobchi',"Sotuv bo'limi rahbari",'Ombor mudiri'].map(function(s){
+        return '<div style="margin-bottom:16px"><b>'+s+'</b><div style="border-bottom:1px solid #000;height:30px;margin-top:4px"></div><div style="font-size:10px;color:#888;text-align:center">Imzo</div></div>';
+      }).join('')
+    + '</div></div>';
+
+  var pa = document.getElementById('print-area');
+  pa.innerHTML = html;
+  setTimeout(function(){ window.print(); }, 200);
 }
 
 // Toast
