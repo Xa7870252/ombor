@@ -852,17 +852,11 @@ tr:nth-child(even):hover td{background:#f4f6fa;}
         <span id="size-range-wrap" class="size-range-wrap">
           <span>Dan:</span>
           <select id="size-from" onchange="updateSizeGrid()">
-            <option>40</option><option>42</option><option>44</option><option>46</option>
-            <option>48</option><option>50</option><option>52</option><option>54</option>
-            <option>56</option><option>58</option><option>60</option><option>62</option>
-            <option>64</option><option>66</option><option>68</option>
+            <option>40</option><option>42</option><option>44</option><option>46</option><option>48</option><option>50</option><option>52</option><option>54</option><option>56</option><option>58</option><option>60</option><option>62</option><option>64</option><option>66</option><option>68</option><option>70</option><option>72</option><option>74</option><option>76</option><option>78</option><option>80</option><option>82</option><option>84</option><option>86</option><option>88</option><option>90</option><option>92</option><option>94</option><option>96</option><option>98</option><option>100</option><option>102</option><option>104</option><option>106</option><option>108</option><option>110</option><option>112</option><option>114</option><option>116</option><option>118</option><option>120</option><option>122</option><option>124</option><option>126</option><option>128</option><option>130</option><option>132</option><option>134</option><option>136</option><option>138</option><option>140</option><option>142</option><option>144</option><option>146</option><option>148</option><option>150</option><option>152</option><option>154</option><option>156</option><option>158</option><option>160</option><option>162</option><option>164</option><option>166</option><option>168</option><option>170</option><option>172</option><option>174</option><option>176</option><option>178</option><option>180</option><option>182</option><option>184</option><option>186</option><option>188</option><option>190</option><option>192</option><option>194</option><option>196</option><option>198</option>
           </select>
           <span>Gacha:</span>
           <select id="size-to" onchange="updateSizeGrid()">
-            <option>40</option><option>42</option><option>44</option><option>46</option>
-            <option>48</option><option selected>50</option><option>52</option><option>54</option>
-            <option>56</option><option>58</option><option>60</option><option>62</option>
-            <option>64</option><option>66</option><option>68</option>
+            <option>40</option><option>42</option><option>44</option><option>46</option><option>48</option><option  selected>50</option><option>52</option><option>54</option><option>56</option><option>58</option><option>60</option><option>62</option><option>64</option><option>66</option><option>68</option><option>70</option><option>72</option><option>74</option><option>76</option><option>78</option><option>80</option><option>82</option><option>84</option><option>86</option><option>88</option><option>90</option><option>92</option><option>94</option><option>96</option><option>98</option><option>100</option><option>102</option><option>104</option><option>106</option><option>108</option><option>110</option><option>112</option><option>114</option><option>116</option><option>118</option><option>120</option><option>122</option><option>124</option><option>126</option><option>128</option><option>130</option><option>132</option><option>134</option><option>136</option><option>138</option><option>140</option><option>142</option><option>144</option><option>146</option><option>148</option><option>150</option><option>152</option><option>154</option><option>156</option><option>158</option><option>160</option><option>162</option><option>164</option><option>166</option><option>168</option><option>170</option><option>172</option><option>174</option><option>176</option><option>178</option><option>180</option><option>182</option><option>184</option><option>186</option><option>188</option><option>190</option><option>192</option><option>194</option><option>196</option><option>198</option>
           </select>
         </span>
       </div>
@@ -1018,7 +1012,7 @@ document.addEventListener('wheel', function(e){
 }, {passive:false});
 
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbz-RBxhOuPCtL9bKCaBYFBczvLR8k6Ew4Pwllt0h9b4Mu2bL6Xi78wO-32hIUTCOrGp/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbyDspV1cGK0nxnP51E7LQjZD5UZ4DfvTRDRKEj5YilpOaVVOPXSznkRlXklCADibl9ZVA/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbx-qMUswkl-gDUgUh8WGCM2rYcj4oSFgQHouDtrq2l-hhEsssFrBhvRUs7uev1Kr0MZRA/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120,122,124,126,128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,196,198];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
@@ -1270,6 +1264,7 @@ function addKirim() {
   var client  = document.getElementById('k-client').value.trim();
   var product = document.getElementById('k-product').value.trim();
   if (!client || !product) { if (btn) btn.disabled = false; toast('⚠ Klient va Mahsulot kiriting!'); return; }
+  var czEl = document.getElementById('k-cz');
   var czEl = document.getElementById('k-cz');
   var sizes = {}, jami = 0;
   getActiveSizes().forEach(function(s) {
