@@ -1012,7 +1012,7 @@ document.addEventListener('wheel', function(e){
 }, {passive:false});
 
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbz-RBxhOuPCtL9bKCaBYFBczvLR8k6Ew4Pwllt0h9b4Mu2bL6Xi78wO-32hIUTCOrGp/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbwq57-s1hmnbD-0EiSTO1EMgaO3RTjzp4X-rufstj-uF59OB3H4K7g3gG6c2b7f_oUP/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbwRMKFV9CpM6mwaj67KqQQ9J2NrrwJX4kWT--6yITv6Zare6EBvrEyKH0jojsHjfWBXBg/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120,122,124,126,128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,196,198];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
@@ -1510,20 +1510,49 @@ function saveAllChiqim() {
     return {sana:r.sana, bc:r.bc, trim:r.trim, client:r.client,
       product:r.product, color:r.color, buyer:r.buyer, qty:r.qty, sizes:r.sizes || {}};
   });
+  // Bir marta yuborish — fallback yo'q (2 marta yozilmaslik uchun)
   jsonp(OMBOR_URL, {action:'addChiqimBatch', rows:JSON.stringify(rows)}, function(err, d) {
     btn.disabled = false;
+    btn.innerHTML = '💾 Barchasini saqlash';
     if (!err && d && d.status === 'ok') {
       pending.forEach(function(r) { r.holat = 'Yozildi'; r.pending = false; });
-      renderChiqim(); btn.disabled = false;
-      btn.innerHTML = '💾 Barchasini saqlash';
+      renderChiqim();
       updateSaveBtn();
       toast('✅ ' + pending.length + ' ta chiqim Google Sheets\'ga yozildi!');
       playBeep('ok');
     } else {
-      btn.disabled = false;
-      btn.innerHTML = '💾 Barchasini saqlash';
-      toast('⚠ Xatolik yuz berdi — alohida yuborilmoqda...');
-      saveChiqimOne(pending, btn);
+      // Xato — lekin Sheets ga yozilgan bo'lishi mumkin, qayta yubormaslik
+      toast('⚠ Javob kelmadi — sahifani yangilab tekshiring (qayta bosmang!)');
+      playBeep('err');
+      // pending larni "Tekshirilmoqda" holatiga o'tkazish
+      pending.forEach(function(r) { r.holat = 'Tekshirilmoqda...'; });
+      renderChiqim();
+      // 3 soniyadan keyin getData bilan tekshirish
+      setTimeout(function() { syncChiqimStatus(pending); }, 3000);
+    }
+  });
+}
+
+function syncChiqimStatus(pending) {
+  // Sheets dan qayta yuklash — yozilganmi tekshirish
+  jsonp(OMBOR_URL, {action:'getData'}, function(err, d) {
+    if (err || !d || d.status !== 'ok') return;
+    var sheetBcs = new Set((d.chiqim||[]).map(function(r){ return r.bc; }));
+    var allSaved = true;
+    pending.forEach(function(r) {
+      if (sheetBcs.has(r.bc)) {
+        r.holat = 'Yozildi'; r.pending = false;
+      } else {
+        r.holat = 'Kutilmoqda'; r.pending = true;
+        allSaved = false;
+      }
+    });
+    renderChiqim(); updateSaveBtn();
+    if (allSaved) {
+      toast('✅ Chiqimlar Sheets da tasdiqlandi!');
+      playBeep('ok');
+    } else {
+      toast('⚠ Ba\'zi chiqimlar yozilmagan — qayta saqlang');
     }
   });
 }
