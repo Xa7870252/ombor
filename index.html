@@ -1184,9 +1184,9 @@ function loadFromSheets() {
     s.className = 'conn ok';
     kirimData = d.kirim || [];
     var sheetChiqim = d.chiqim || [];
-    var sheetBcSet  = new Set(sheetChiqim.map(function(r){ return r.bc; }));
+    var sheetBcSet  = new Set(sheetChiqim.map(function(r){ return String(r.bc); }));
     var localPending = loadPendingLocal();
-    var notSaved = localPending.filter(function(r){ return !sheetBcSet.has(r.bc); });
+    var notSaved = localPending.filter(function(r){ return !sheetBcSet.has(String(r.bc)); });
     chiqimData = sheetChiqim.concat(notSaved);
     if (notSaved.length) {
       toast('⚠ ' + notSaved.length + ' ta saqlanmagan chiqim topildi — saqlang!');
