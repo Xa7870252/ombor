@@ -1012,7 +1012,7 @@ document.addEventListener('wheel', function(e){
 }, {passive:false});
 
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbz-RBxhOuPCtL9bKCaBYFBczvLR8k6Ew4Pwllt0h9b4Mu2bL6Xi78wO-32hIUTCOrGp/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbwRMKFV9CpM6mwaj67KqQQ9J2NrrwJX4kWT--6yITv6Zare6EBvrEyKH0jojsHjfWBXBg/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxb-hVICHshpq0lLbEInXO7l9q4DECZR-PrX4RW3IOV5v1dG7uIrWSz-wZYh9fSTtl1/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120,122,124,126,128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,196,198];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
@@ -1023,6 +1023,23 @@ var kirimData  = [];
 var chiqimData = [];
 var lastBc     = 10001;
 var dataReady  = false;
+
+function savePendingLocal() {
+  try {
+    var pending = chiqimData.filter(function(r){ return r.pending; });
+    localStorage.setItem('pendingChiqim', JSON.stringify(pending));
+  } catch(e) {}
+}
+function loadPendingLocal() {
+  try {
+    var raw = localStorage.getItem('pendingChiqim');
+    if (!raw) return [];
+    return JSON.parse(raw) || [];
+  } catch(e) { return []; }
+}
+function clearPendingLocal() {
+  try { localStorage.removeItem('pendingChiqim'); } catch(e) {}
+}
 var selIds     = new Set();
 var kirimSelIds = new Set();
 var isOperator = false;
@@ -1165,14 +1182,23 @@ function loadFromSheets() {
     }
     s.textContent = '✓ Sheets ulandi';
     s.className = 'conn ok';
-    kirimData  = d.kirim  || [];
-    chiqimData = d.chiqim || [];
+    kirimData = d.kirim || [];
+    var sheetChiqim = d.chiqim || [];
+    var sheetBcSet  = new Set(sheetChiqim.map(function(r){ return r.bc; }));
+    var localPending = loadPendingLocal();
+    var notSaved = localPending.filter(function(r){ return !sheetBcSet.has(r.bc); });
+    chiqimData = sheetChiqim.concat(notSaved);
+    if (notSaved.length) {
+      toast('⚠ ' + notSaved.length + ' ta saqlanmagan chiqim topildi — saqlang!');
+    } else {
+      clearPendingLocal();
+    }
     if (kirimData.length) {
       var mx = Math.max.apply(null, kirimData.map(function(r) { return parseInt(r.bc) || 0; }));
       if (mx >= lastBc) lastBc = mx;
     }
     dataReady = true;
-    renderKirim(); renderChiqim();
+    renderKirim(); renderChiqim(); updateSaveBtn();
   });
 }
 
@@ -1468,6 +1494,7 @@ function processScan(val) {
     holat:'Kutilmoqda', pending:true
   };
   chiqimData.push(rec);
+  savePendingLocal();
   renderChiqim(); updateSaveBtn();
   var cnt = parseInt(document.getElementById('scan-count').textContent) || 0;
   document.getElementById('scan-count').textContent = cnt + 1;
@@ -1510,27 +1537,49 @@ function saveAllChiqim() {
     return {sana:r.sana, bc:r.bc, trim:r.trim, client:r.client,
       product:r.product, color:r.color, buyer:r.buyer, qty:r.qty, sizes:r.sizes || {}};
   });
-  // Bir marta yuborish — fallback yo'q (2 marta yozilmaslik uchun)
-  jsonp(OMBOR_URL, {action:'addChiqimBatch', rows:JSON.stringify(rows)}, function(err, d) {
-    btn.disabled = false;
-    btn.innerHTML = '💾 Barchasini saqlash';
-    if (!err && d && d.status === 'ok') {
-      pending.forEach(function(r) { r.holat = 'Yozildi'; r.pending = false; });
+  // Bo'lib-bo'lib yuborish (har 4 tadan) — URL limit oshib ketmasin
+  var CHUNK = 4;
+  var chunks = [];
+  for (var i = 0; i < rows.length; i += CHUNK) chunks.push(rows.slice(i, i + CHUNK));
+  var totalSent = 0, totalErr = 0, chunkDone = 0;
+
+  function sendChunk(idx) {
+    if (idx >= chunks.length) return;
+    jsonp(OMBOR_URL, {action:'addChiqimBatch', rows:JSON.stringify(chunks[idx])}, function(err, d) {
+      chunkDone++;
+      if (!err && d && d.status === 'ok') {
+        chunks[idx].forEach(function(row) {
+          var rec = pending.filter(function(r){ return r.bc === row.bc; })[0];
+          if (rec) { rec.holat = 'Yozildi'; rec.pending = false; totalSent++; }
+        });
+      } else {
+        chunks[idx].forEach(function(row) {
+          var rec = pending.filter(function(r){ return r.bc === row.bc; })[0];
+          if (rec) { rec.holat = 'Xato'; totalErr++; }
+        });
+      }
       renderChiqim();
-      updateSaveBtn();
-      toast('✅ ' + pending.length + ' ta chiqim Google Sheets\'ga yozildi!');
-      playBeep('ok');
-    } else {
-      // Xato — lekin Sheets ga yozilgan bo'lishi mumkin, qayta yubormaslik
-      toast('⚠ Javob kelmadi — sahifani yangilab tekshiring (qayta bosmang!)');
-      playBeep('err');
-      // pending larni "Tekshirilmoqda" holatiga o'tkazish
-      pending.forEach(function(r) { r.holat = 'Tekshirilmoqda...'; });
-      renderChiqim();
-      // 3 soniyadan keyin getData bilan tekshirish
-      setTimeout(function() { syncChiqimStatus(pending); }, 3000);
-    }
-  });
+      if (chunkDone === chunks.length) {
+        // Hammasi tugadi
+        btn.disabled = false;
+        btn.innerHTML = '💾 Barchasini saqlash';
+        savePendingLocal();
+        updateSaveBtn();
+        if (totalErr === 0) {
+          clearPendingLocal();
+          toast('✅ ' + totalSent + ' ta chiqim saqlandi!');
+          playBeep('ok');
+        } else {
+          toast('⚠ ' + totalErr + ' ta yozilmadi — qayta saqlang');
+          playBeep('err');
+        }
+      } else {
+        // Keyingi chunk ni yuborish (500ms kutib)
+        setTimeout(function(){ sendChunk(idx + 1); }, 500);
+      }
+    });
+  }
+  sendChunk(0);
 }
 
 function syncChiqimStatus(pending) {
