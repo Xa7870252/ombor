@@ -1012,7 +1012,7 @@ document.addEventListener('wheel', function(e){
 }, {passive:false});
 
 var ZAKAZ_URL = 'https://script.google.com/macros/s/AKfycbz-RBxhOuPCtL9bKCaBYFBczvLR8k6Ew4Pwllt0h9b4Mu2bL6Xi78wO-32hIUTCOrGp/exec';
-var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxISLcIuoxf0200inVaQGl6IDcbiRlmYXvZKDExwXVFMBW_KfDQbWjpfvGW6s2SkxSNKA/exec';
+var OMBOR_URL = 'https://script.google.com/macros/s/AKfycbxv_P337-YxEzmRa-PQc55ndLsscVS9GHibPCyOrW-NK6o2Z7L-w6nfOor-gwlztpRjNA/exec';
 var OPERATOR_PASS = 'tmo2024';
 var ALL_SIZES_NUM  = [40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120,122,124,126,128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,196,198];
 var ALL_SIZES_CHAR = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
@@ -1618,7 +1618,7 @@ function renderChiqim() {
   var html = '';
   chiqimData.forEach(function(r, i) {
     var key = String(r.id || r.bc);
-    var holatBadge = r.holat === 'Yozildi'
+    var holatBadge = (r.holat === 'Yozildi' || r.holat === 'Sheets dan' || !r.pending)
       ? '<span class="status-badge status-saved">✓ Yozildi</span>'
       : r.holat === 'Xato'
         ? '<span class="status-badge status-error">✕ Xato</span>'
